@@ -2,9 +2,12 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include <vector>
+
 #include "Window.h"
 #include "Timer.h"
 #include "Logger.h"
+#include "Sprite.h"
 
 #ifdef DEBUG
 #include "Debugger.h"
@@ -36,12 +39,16 @@ public:
 	void EndFrame();
 
 	Window m_Window;
+
 	Timer m_Timer;
+
 	Logger m_Logger;
 
 #ifdef DEBUG
 	Debugger m_Debugger;
 #endif
+
+	std::vector<std::reference_wrapper<Sprite>> m_Sprites;
 
 private:
 	Engine();

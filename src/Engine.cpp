@@ -32,7 +32,15 @@ void Engine::BeginFrame()
 }
 
 void Engine::EndFrame()
-{	
+{
+	// Render sprites
+	for (Sprite& sprite : m_Sprites)
+	{
+		sprite.m_Sprite.setPosition(sprite.m_Position.x, sprite.m_Position.y);
+		sprite.m_Sprite.setScale(sprite.m_Scale.x, sprite.m_Scale.y);
+		m_Window.Draw(sprite.m_Sprite);
+	}
+
 	// If in debug mode, display FPS
 #ifdef DEBUG
 	m_Debugger.Draw(m_Window, m_Timer.m_fDelta);
