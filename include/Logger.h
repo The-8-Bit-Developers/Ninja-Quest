@@ -17,6 +17,8 @@ public:
 	void Log(const std::string& string);
 	void Err(const std::string& string);
 
+	void Log(const int number);
+
 	std::vector<std::string> m_Messages;
 };
 

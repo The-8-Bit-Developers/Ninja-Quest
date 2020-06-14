@@ -2,12 +2,15 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include <lua/lua.hpp>
+
 #include <vector>
 
 #include "Window.h"
 #include "Timer.h"
 #include "Logger.h"
 #include "Sprite.h"
+#include "Lua.h"
 
 #ifdef DEBUG
 #include "Debugger.h"
@@ -38,15 +41,19 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
+	inline bool GetKeyDown(sf::Keyboard::Key key) { return m_Window.GetKeyDown(key); }
+
 	Window m_Window;
-
 	Timer m_Timer;
-
 	Logger m_Logger;
 
 #ifdef DEBUG
 	Debugger m_Debugger;
 #endif
+
+	Lua m_Lua;
+	static int OnLuaPrint(lua_State* L);
+	static int OnLuaError(lua_State* L);
 
 	std::vector<std::reference_wrapper<Sprite>> m_Sprites;
 

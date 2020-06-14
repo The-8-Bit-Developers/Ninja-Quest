@@ -12,8 +12,7 @@ add_definitions (-DDEBUG)
 endif(NOT CMAKE_BUILD_TYPE MATCHES "Release")
 
 # Add files
-set (source_dir "${PROJECT_SOURCE_DIR}/src")
-file (GLOB source_files "${source_dir}/*.cpp")
+file (GLOB source_files "${PROJECT_SOURCE_DIR}/src/*.cpp")
 file (GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
 
 # Set flags for GCC
@@ -36,10 +35,13 @@ set(CMAKE_FIND_FRAMEWORK LAST)
 set(SFML_DIR "${PROJECT_SOURCE_DIR}/SFML/lib/cmake/SFML")
 find_package(SFML 2.5 COMPONENTS graphics audio main REQUIRED)
 
-# Add source code to executable and link with SFML
-include_directories(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/include/)
-add_executable(${PROJECT_NAME} ${source_files} ${include_files})
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-main)
+# Find Lua
+link_directories(${PROJECT_SOURCE_DIR}/lua/)
+
+# Add source code to executable and link with SFML and Lua
+include_directories(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/include/ ${PROJECT_SOURCE_DIR}/lua/)
+add_executable(${PROJECT_NAME} ${source_files} ${include_files} ${lua_source_files})
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-main lua53)
 
 # Get rid of command prompt window if on Windows
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 #if DEBUG
-Engine::Engine() : m_Debugger(m_Logger) {}
+Engine::Engine() : m_Debugger(m_Logger), m_Lua(m_Logger, OnLuaPrint, OnLuaError) {}
 #else
 Engine::Engine() {}
 #endif
@@ -20,6 +20,32 @@ bool Engine::Update()
 	}
 
 	return !m_Window.ShouldClose();
+}
+
+int Engine::OnLuaPrint(lua_State* L)
+{
+	std::string message;
+	int nargs = lua_gettop(L);
+
+	for (int i = 1; i <= nargs; i++) // Can't call log because of my fancy macro, ha ha
+		message += std::string(lua_tostring(L, i)) + " ";
+
+	Engine::Get().m_Logger.m_Messages.push_back(message);
+
+	return 0;
+}
+
+int Engine::OnLuaError(lua_State* L)
+{
+	std::string message;
+	int nargs = lua_gettop(L);
+
+	for (int i = 1; i <= nargs; i++) // Can't call log because of my fancy macro, ha ha
+		message += std::string(lua_tostring(L, i)) + " ";
+
+	Engine::Get().m_Logger.m_Messages.push_back(message);
+
+	return 0;
 }
 
 void Engine::BeginFrame()
