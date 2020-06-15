@@ -12,11 +12,19 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 	m_Window.Create(windowName, windowWidth, windowHeight);
 	Sprite::logger = &m_Logger;
 
+	float aspect = (float)windowHeight / (float)windowWidth;
+	m_DebugCamera.size = Vec2((float)windowWidth, (float)windowHeight);
+	m_DebugCamera.position = Vec2((float)(windowWidth / 2), (float)(windowHeight / (2 + aspect)));
+
 	// Register Lua functions
 	m_Lua.SetGlobalFunction("CreateSprite", lua_CreateSprite);
 	m_Lua.SetGlobalFunction("GetKeyDown",	lua_GetKeyDown);
 	m_Lua.SetGlobalFunction("AddX",			lua_AddX);
 	m_Lua.SetGlobalFunction("AddY",			lua_AddY);
+	m_Lua.SetGlobalFunction("GetX",			lua_GetX);
+	m_Lua.SetGlobalFunction("GetY",			lua_GetY);
+	m_Lua.SetGlobalFunction("SetX",			lua_SetX);
+	m_Lua.SetGlobalFunction("SetY",			lua_SetY);
 }
 
 Sprite* Engine::GetSprite(unsigned int ID)
@@ -76,6 +84,9 @@ void Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
+	// Do camera
+	m_Window.SetCamera(m_Camera);
+
 	// Render sprites
 	for (auto& [id, sprite] : Sprite::s_Sprites)
 	{		
@@ -86,7 +97,9 @@ void Engine::EndFrame()
 
 	// If in debug mode, display FPS
 #ifdef DEBUG
+	m_Window.SetCamera(m_DebugCamera);
 	m_Debugger.Draw(m_Window, m_Timer.m_fDelta);
+	m_Window.SetCamera(m_Camera);
 #endif
 
 	// Swap buffers
@@ -94,7 +107,6 @@ void Engine::EndFrame()
 
 	// End delta-time calculation
 	m_Timer.EndFrame();
-	m_Lua.SetGlobalNumber("deltaTime", m_Timer.m_fDelta);
 }
 
 int Engine::lua_CreateSprite(lua_State* L)
@@ -125,6 +137,14 @@ int Engine::lua_AddX(lua_State* L)
 {
 	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function AddX"); return 0; }
 
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		float change = Engine::Get().m_Lua.GetFloat(2);
+		Engine::Get().m_Camera.position.x += change;
+		return 0;
+	}
+
 	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
 	float change = Engine::Get().m_Lua.GetFloat(2);
 	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.x += change;
@@ -136,12 +156,96 @@ int Engine::lua_AddY(lua_State* L)
 {
 	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function AddY"); return 0; }
 
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		float change = Engine::Get().m_Lua.GetFloat(2);
+		Engine::Get().m_Camera.position.y += change;
+		return 0;
+	}
+
+
 	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
 	float change = Engine::Get().m_Lua.GetFloat(2);
 	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.y += change;
 
 	return 0;
 }
+
+int Engine::lua_GetX(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetX"); return 0; }
+
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		Engine::Get().m_Lua.PushNumber(Engine::Get().m_Camera.position.x);
+		return 0;
+	}
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_Position.x);
+	else Engine::Get().m_Lua.PushNumber(-1);
+
+	return 1;
+}
+
+int Engine::lua_GetY(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetY"); return 0; }
+
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		Engine::Get().m_Lua.PushNumber(Engine::Get().m_Camera.position.y);
+		return 0;
+	}
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_Position.y);
+	else Engine::Get().m_Lua.PushNumber(-1);
+
+	return 1;
+}
+
+int Engine::lua_SetX(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetX"); return 0; }
+
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		float pos = Engine::Get().m_Lua.GetFloat(2);
+		Engine::Get().m_Camera.position.x = pos;
+		return 0;
+	}
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float newPos = Engine::Get().m_Lua.GetFloat(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.x = newPos;
+
+	return 1;
+}
+
+int Engine::lua_SetY(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetY"); return 0; }
+
+	// If camera
+	if (Engine::Get().m_Lua.GetString(1) == "camera")
+	{
+		float pos = Engine::Get().m_Lua.GetFloat(2);
+		Engine::Get().m_Camera.position.y = pos;
+		return 0;
+	}
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float newPos = Engine::Get().m_Lua.GetFloat(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.y = newPos;
+
+	return 1;
+}
+
 
 Engine::~Engine() 
 {

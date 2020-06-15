@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "Sprite.h"
 #include "Lua.h"
+#include "Camera.h"
 
 #ifdef DEBUG
 #include "Debugger.h"
@@ -52,6 +53,8 @@ public:
 	Debugger m_Debugger;
 #endif
 
+	Camera m_Camera;
+
 	Lua m_Lua;
 	static int OnLuaPrint(lua_State* L);
 	static int OnLuaError(lua_State* L);
@@ -61,11 +64,19 @@ public:
 	static int lua_GetKeyDown(lua_State* L);
 	static int lua_AddX(lua_State* L);
 	static int lua_AddY(lua_State* L);
+	static int lua_GetX(lua_State* L);
+	static int lua_GetY(lua_State* L);
+	static int lua_SetX(lua_State* L);
+	static int lua_SetY(lua_State* L);
 
 private:
 	Engine();
 
 	std::vector<Sprite*> m_luaSprites;
+
+#ifdef DEBUG
+	Camera m_DebugCamera;
+#endif
 };
 
 #endif

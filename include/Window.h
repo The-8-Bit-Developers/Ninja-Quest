@@ -5,6 +5,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "Camera.h"
+
 /*
 	The purpose of the window class is to provide an abstraction from
 	SFML, so that ports to other platforms should be trivial
@@ -31,6 +33,8 @@ public:
 	void Draw(sf::Sprite& sprite);
 	void Draw(sf::Text& text);
 
+	void SetCamera(Camera& camera);
+
 	void Display();
 
 	bool ShouldClose();
@@ -38,6 +42,9 @@ public:
 
 private:
 	sf::RenderWindow m_Window;
+
+	int m_Width;
+	int m_Height;
 };
 
 #endif
