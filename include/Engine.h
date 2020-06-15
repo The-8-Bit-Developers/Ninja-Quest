@@ -58,6 +58,9 @@ public:
 
 	// Lua functions
 	static int lua_CreateSprite(lua_State* L);
+	static int lua_GetKeyDown(lua_State* L);
+	static int lua_AddX(lua_State* L);
+	static int lua_AddY(lua_State* L);
 
 private:
 	Engine();

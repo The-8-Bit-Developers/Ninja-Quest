@@ -43,11 +43,13 @@ void Lua::SetGlobalNumber(const std::string& variable, float number)
 }
 
 int Lua::GetInt(int id) { return (int) lua_tonumber(L, id); }
+float Lua::GetFloat(int id) { return (float)lua_tonumber(L, id); }
 std::string Lua::GetString(int id) { return lua_tostring(L, id); }
 
 void Lua::PushNumber(int number)	{ lua_pushnumber(L, number); }
 void Lua::PushNumber(float number)	{ lua_pushnumber(L, number); }
 void Lua::PushString(const std::string& string) { lua_pushstring(L, string.c_str()); }
+void Lua::PushBool(bool b) { lua_pushboolean(L, b); }
 
 void Lua::CallGlobalFunction(const std::string& function, std::function<void()> ProvideArguments, int nProvidedArguments, int nExpectedArguments)
 {

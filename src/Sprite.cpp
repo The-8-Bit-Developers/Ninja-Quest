@@ -24,9 +24,4 @@ Sprite::Sprite(sf::Texture& texture) : m_Scale(1.0f, 1.0f)
 
 Sprite::Sprite() : m_Scale(1.0f, 1.0f) { s_SpriteIDCount++; s_Sprites[m_ID] = this; }
 
-#include <iostream>
-Sprite::~Sprite()
-{
-	s_Sprites.erase(m_ID);
-	std::cout << "Deleted it " << std::to_string(m_ID) << std::endl;
-}
+Sprite::~Sprite() { s_Sprites.erase(m_ID); }

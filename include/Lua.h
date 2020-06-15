@@ -26,11 +26,13 @@ public:
 	void SetGlobalNumber(const std::string& variable, float number);
 
 	int GetInt(int id);
+	float GetFloat(int id);
 	std::string GetString(int id);
 
 	void PushNumber(int number);
 	void PushNumber(float number);
 	void PushString(const std::string& string);
+	void PushBool(bool b);
 
 	void CallGlobalFunction(const std::string& function, std::function<void()> ProvideArguments, int nProvidedArguments, int nExpectedArguments);
 	void CallGlobalFunction(const std::string& function);

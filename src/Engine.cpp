@@ -14,6 +14,9 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 
 	// Register Lua functions
 	m_Lua.SetGlobalFunction("CreateSprite", lua_CreateSprite);
+	m_Lua.SetGlobalFunction("GetKeyDown",	lua_GetKeyDown);
+	m_Lua.SetGlobalFunction("AddX",			lua_AddX);
+	m_Lua.SetGlobalFunction("AddY",			lua_AddY);
 }
 
 Sprite* Engine::GetSprite(unsigned int ID)
@@ -96,7 +99,7 @@ void Engine::EndFrame()
 
 int Engine::lua_CreateSprite(lua_State* L)
 {
-	if (lua_gettop(L) < 1) { Log("Invalid number of arguments in function CreateSprite"); return 0; }
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function CreateSprite"); return 0; }
 
 	// Retrieve arguments
 	const std::string fileName = Engine::Get().m_Lua.GetString(1);
@@ -108,4 +111,39 @@ int Engine::lua_CreateSprite(lua_State* L)
 	return 1;
 }
 
-Engine::~Engine() {}
+int Engine::lua_GetKeyDown(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetKeyDown"); return 0; }
+	
+	sf::Keyboard::Key key = (sf::Keyboard::Key)Engine::Get().m_Lua.GetInt(1);
+	Engine::Get().m_Lua.PushBool(sf::Keyboard::isKeyPressed(key));
+
+	return 1;
+}
+
+int Engine::lua_AddX(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function AddX"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float change = Engine::Get().m_Lua.GetFloat(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.x += change;
+
+	return 0;
+}
+
+int Engine::lua_AddY(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function AddY"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float change = Engine::Get().m_Lua.GetFloat(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Position.y += change;
+
+	return 0;
+}
+
+Engine::~Engine() 
+{
+	for (Sprite* sprite : m_luaSprites) delete sprite;
+}

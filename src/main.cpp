@@ -25,7 +25,7 @@ int main()
 
 		//if (Engine::Get().GetSprite(2)) player.m_Scale = { 1.0f, 1.0f };
 
-		Engine::Get().m_Lua.CallGlobalFunction("OnUserUpdate");
+		Engine::Get().m_Lua.CallGlobalFunction("OnUserUpdate", []() { Engine::Get().m_Lua.PushNumber(Engine::Get().m_Timer.m_fDelta); }, 1, 0);
 
 		Engine::Get().EndFrame();
 	}
