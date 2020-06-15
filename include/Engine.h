@@ -3,7 +3,6 @@
 #define ENGINE_H
 
 #include <lua/lua.hpp>
-
 #include <vector>
 
 #include "Window.h"
@@ -36,6 +35,8 @@ public:
 
 	void Create(const std::string& windowName, const int windowWidth, const int windowHeight);
 
+	Sprite* GetSprite(unsigned int ID);
+
 	bool Update();
 
 	void BeginFrame();
@@ -55,10 +56,13 @@ public:
 	static int OnLuaPrint(lua_State* L);
 	static int OnLuaError(lua_State* L);
 
-	std::vector<std::reference_wrapper<Sprite>> m_Sprites;
+	// Lua functions
+	static int lua_CreateSprite(lua_State* L);
 
 private:
 	Engine();
+
+	std::vector<Sprite*> m_luaSprites;
 };
 
 #endif

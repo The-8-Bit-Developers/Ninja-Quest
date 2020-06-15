@@ -11,6 +11,7 @@ Debugger::Debugger(Logger& _logger)
 void Debugger::Draw(Window& window, float fElapsedTime)
 {
 	const_cast<sf::Texture&>(m_Font.getTexture(30)).setSmooth(false);
+	const_cast<sf::Texture&>(m_Font.getTexture(20)).setSmooth(false);
 
 	sf::Text text("", m_Font);
 	text.setCharacterSize(30);
@@ -27,6 +28,7 @@ void Debugger::Draw(Window& window, float fElapsedTime)
 	text.setPosition(sf::Vector2f(x, y));
 	text.setString("Frame took " + std::to_string(int(fElapsedTime)) + " ms - (" + std::to_string(int(1000.0f / fElapsedTime)) + " FPS)");
 	window.Draw(text);
+	text.setCharacterSize(20);
 	y += 50;
 
 	// Draw log messages

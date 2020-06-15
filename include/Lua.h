@@ -23,11 +23,19 @@ public:
 	const std::string GetGlobalString(const std::string& variable = "-1");
 	int GetGlobalNumber(const std::string& variable = "-1");
 
+	void SetGlobalNumber(const std::string& variable, float number);
+
+	int GetInt(int id);
+	std::string GetString(int id);
+
 	void PushNumber(int number);
 	void PushNumber(float number);
+	void PushString(const std::string& string);
 
 	void CallGlobalFunction(const std::string& function, std::function<void()> ProvideArguments, int nProvidedArguments, int nExpectedArguments);
 	void CallGlobalFunction(const std::string& function);
+
+	void SetGlobalFunction(const std::string& name, int(*function)(lua_State*));
 
 private:
 	lua_State* L;

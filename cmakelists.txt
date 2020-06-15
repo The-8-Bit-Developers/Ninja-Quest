@@ -5,8 +5,9 @@ cmake_minimum_required(VERSION 3.1)
 project(8BitEngine)
 
 # Set target to DEBUG
-set (CMAKE_CONFIGURATION_TYPES "Debug")
-set (CMAKE_BUILD_TYPE "Debug")
+set (debug_or_release_mode "Debug")
+set (CMAKE_CONFIGURATION_TYPES ${debug_or_release_mode})
+set (CMAKE_BUILD_TYPE ${debug_or_release_mode})
 if(NOT CMAKE_BUILD_TYPE MATCHES "Release")
 add_definitions (-DDEBUG)
 endif(NOT CMAKE_BUILD_TYPE MATCHES "Release")
@@ -14,6 +15,7 @@ endif(NOT CMAKE_BUILD_TYPE MATCHES "Release")
 # Add files
 file (GLOB source_files "${PROJECT_SOURCE_DIR}/src/*.cpp")
 file (GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
+file (GLOB lua_scripts "${PROJECT_SOURCE_DIR}/res/*.lua")
 
 # Set flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -40,10 +42,12 @@ link_directories(${PROJECT_SOURCE_DIR}/lua/)
 
 # Add source code to executable and link with SFML and Lua
 include_directories(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/include/ ${PROJECT_SOURCE_DIR}/lua/)
-add_executable(${PROJECT_NAME} ${source_files} ${include_files} ${lua_source_files})
+add_executable(${PROJECT_NAME} ${source_files} ${include_files} ${lua_source_files} ${lua_scripts})
 target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-main lua53)
 
-# Get rid of command prompt window if on Windows
+# Get rid of command prompt window if on Windows and release mode
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:WINDOWS)
+	if (debug_or_release_mode MATCHES "Release")
+		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:WINDOWS)
+	endif (debug_or_release_mode MATCHES "Release")
 endif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
