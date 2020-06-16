@@ -11,6 +11,7 @@
 
 #include "Vec2.h"
 #include "Logger.h"
+#include "Texture.h"
 
 /*
 	Generic sprite class that also manages world state
@@ -19,14 +20,14 @@ class Sprite
 {
 public:
 	Sprite(const std::string& fileName);
-	Sprite(sf::Texture& texture);
+	Sprite(sf::Texture* texture);
 	Sprite();
 	~Sprite();
 
 	Vec2 m_Position;
 	Vec2 m_Scale;
 
-	sf::Texture m_Texture;
+	sf::Texture* m_Texture;
 	sf::Sprite m_Sprite;
 	
 	unsigned int m_ID;

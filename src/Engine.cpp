@@ -11,6 +11,7 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 {
 	m_Window.Create(windowName, windowWidth, windowHeight);
 	Sprite::logger = &m_Logger;
+	Texture::s_Logger = &m_Logger;
 
 	m_DebugCamera = m_Window.GetDefaultCamera();
 
@@ -397,5 +398,6 @@ int Engine::lua_GetDensity(lua_State* L)
 
 Engine::~Engine() 
 {
+	Texture::CleanUp();
 	for (Sprite* sprite : m_luaSprites) delete sprite;
 }

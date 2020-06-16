@@ -11,6 +11,7 @@
 #include "Sprite.h"
 #include "Lua.h"
 #include "Camera.h"
+#include "Texture.h"
 
 #ifdef DEBUG
 #include "Debugger.h"
