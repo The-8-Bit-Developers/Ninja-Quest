@@ -8,7 +8,7 @@ Debugger::Debugger(Logger& _logger)
 	logger = &_logger;
 }
 
-void Debugger::Draw(Window& window, float fElapsedTime)
+void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime)
 {
 	const_cast<sf::Texture&>(m_Font.getTexture(30)).setSmooth(false);
 	const_cast<sf::Texture&>(m_Font.getTexture(20)).setSmooth(false);
@@ -22,14 +22,20 @@ void Debugger::Draw(Window& window, float fElapsedTime)
 	const int lineHeight = text.getCharacterSize();
 
 	float x = 10;
-	float y = 10;
+	float y = 75;
 
 	// Draw fps
 	text.setPosition(sf::Vector2f(x, y));
-	text.setString("Frame took " + std::to_string(int(fElapsedTime)) + " ms - (" + std::to_string(int(1000.0f / fElapsedTime)) + " FPS)");
+	text.setString("Frame  took " + std::to_string(int(fElapsedTime)) + " ms - (" + std::to_string(int(1000.0f / fElapsedTime)) + " FPS)");
 	window.Draw(text);
+
+	// Draw physics time
+	text.setPosition(sf::Vector2f(x, y + 30));
+	text.setString("Physics took " + std::to_string(int(physicsTime)) + " ms");
+	window.Draw(text);
+
 	text.setCharacterSize(20);
-	y += 50;
+	y += 70;
 
 	// Draw log messages
 	for (const std::string& message : logger->m_Messages)

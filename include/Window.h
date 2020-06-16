@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Camera.h"
+#include "Vec2.h"
 
 /*
 	The purpose of the window class is to provide an abstraction from
@@ -32,8 +33,10 @@ public:
 
 	void Draw(sf::Sprite& sprite);
 	void Draw(sf::Text& text);
+	void DrawBoundingBox(Vec2 position, Vec2 size);
 
 	void SetCamera(Camera& camera);
+	Camera GetDefaultCamera();
 
 	void Display();
 

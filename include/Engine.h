@@ -68,6 +68,10 @@ public:
 	static int lua_GetY(lua_State* L);
 	static int lua_SetX(lua_State* L);
 	static int lua_SetY(lua_State* L);
+	static int lua_SetGravity(lua_State* L);
+	static int lua_SetPhysics(lua_State* L);
+	static int lua_GetGravity(lua_State* L);
+	static int lua_GetPhysics(lua_State* L);
 
 private:
 	Engine();

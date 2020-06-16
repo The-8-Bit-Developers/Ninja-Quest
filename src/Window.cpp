@@ -27,11 +27,44 @@ void Window::Clear(sf::Color colour) { m_Window.clear(colour); }
 
 void Window::Draw(sf::Sprite& sprite) { m_Window.draw(sprite); }
 void Window::Draw(sf::Text& text) { m_Window.draw(text); }
+void Window::DrawBoundingBox(Vec2 position, Vec2 size)
+{
+	const float scale = 1.0f;
+
+	sf::RectangleShape left;
+	left.setPosition(sf::Vector2f(position.x, position.y));
+	left.setSize(sf::Vector2f(scale, size.y));
+
+	sf::RectangleShape up;
+	up.setPosition(sf::Vector2f(position.x, position.y));
+	up.setSize(sf::Vector2f(size.x, scale));
+
+	sf::RectangleShape right;
+	right.setPosition(sf::Vector2f(position.x + size.x, position.y));
+	right.setSize(sf::Vector2f(scale, size.y));
+
+	sf::RectangleShape down;
+	down.setPosition(sf::Vector2f(position.x, position.y + size.y));
+	down.setSize(sf::Vector2f(size.x + 1, scale));
+
+	m_Window.draw(left);
+	m_Window.draw(right);
+	m_Window.draw(up);
+	m_Window.draw(down);
+}
 
 void Window::SetCamera(Camera& camera) 
 { 
 	sf::View view(sf::Vector2f(camera.position.x, camera.position.y), sf::Vector2f(camera.size.x, camera.size.y * ((float)m_Height / (float)m_Width)));
 	m_Window.setView(view); 
+}
+
+Camera Window::GetDefaultCamera()
+{
+	Camera camera;
+	camera.position = Vec2(m_Window.getDefaultView().getCenter().x, m_Window.getDefaultView().getCenter().y);
+	camera.size = Vec2(m_Window.getDefaultView().getSize().x, m_Window.getDefaultView().getSize().y);
+	return camera;
 }
 
 void Window::Display() { m_Window.display(); }
