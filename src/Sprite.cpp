@@ -4,6 +4,8 @@ Logger* Sprite::logger = nullptr;
 unsigned int Sprite::s_SpriteIDCount = 0;
 std::unordered_map<unsigned int, Sprite*> Sprite::s_Sprites;
 
+b2World Sprite::s_PhysicsWorld(b2Vec2(0.0f, -10.0f));
+
 Sprite::Sprite(const std::string& fileName) : m_Scale(1.0f, 1.0f)
 {
 	if (!m_Texture.loadFromFile("../res/" + fileName)) logger->Err("Could not load sprite with texture " + fileName);
@@ -15,8 +17,6 @@ Sprite::Sprite(const std::string& fileName) : m_Scale(1.0f, 1.0f)
 	
 	m_Width = m_Texture.getSize().x;
 	m_Height = m_Texture.getSize().y;
-	m_bPhysics = false;
-	m_fGravity = 0.0f;
 }
 
 Sprite::Sprite(sf::Texture& texture) : m_Scale(1.0f, 1.0f)
@@ -30,76 +30,58 @@ Sprite::Sprite(sf::Texture& texture) : m_Scale(1.0f, 1.0f)
 
 	m_Width = m_Texture.getSize().x;
 	m_Height = m_Texture.getSize().y;
-	m_bPhysics = false;
-	m_fGravity = 0.0f;
 }
 
-Sprite::Sprite() : m_Scale(1.0f, 1.0f), m_Width(0), m_Height(0), m_bPhysics(false), m_fGravity(0) { s_SpriteIDCount++; s_Sprites[m_ID] = this; }
+Sprite::Sprite() : m_Scale(1.0f, 1.0f), m_Width(0), m_Height(0) { s_SpriteIDCount++; s_Sprites[m_ID] = this; }
 
-#include <iostream>
-void Sprite::ComputePhysicsForSprite(float deltaTime)
+void Sprite::AddStaticPhysics()
 {
-	// Apply gravity
-	m_Velocity += Vec2(0.0f, -m_fGravity * deltaTime);
+	if (m_PhysicsBody != nullptr) RemovePhysics();
 
-	// Apply velocity and check for collisions in substeps
-	bool bCollided = false;
-	Vec2 newPosition = m_Position;
+	// Define a body with position, etc
+	b2BodyDef bodyDefinition;
+	bodyDefinition.position.Set(m_Position.x, m_Position.y);
+	
+	// Create the body in the world
+	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
+	m_PhysicsBody->SetFixedRotation(true);
 
-	const int steps = 1;
-	for (int i = 0; i < steps; ++i)
-	{
-		if (m_bPhysics) newPosition += m_Velocity / (float)(i+1);
+	// Define shape, friction, density, etc
+	b2PolygonShape bodyBox;
+	bodyBox.SetAsBox(0.5f * (float)m_Width, 0.5f * (float)m_Height);
 
-		// Check for collisions by incrementing position by the substep,
-		// and if a collision occurs, zero velocity
-		for (auto&[id, sprite] : Sprite::s_Sprites)
-		{
-			if (id == m_ID || sprite->m_bPhysics == false) continue;
-			else if (CollidesWith(*sprite, newPosition))
-			{
-				bCollided = true;
-				
-				// Estimate the normal, by working out which side
-				// the sprite lies on.
-				float spriteUpperY = sprite->m_Position.y;
-				float spriteLowerY = sprite->m_Position.y + sprite->m_Height;
-				float spriteUpperX = sprite->m_Position.x;
-				float spriteLowerX = sprite->m_Position.x + sprite->m_Width;
-
-				float upperY = newPosition.y;
-				float lowerY = newPosition.y + m_Height;
-				float upperX = newPosition.x;
-				float lowerX = newPosition.x + m_Width;
-
-				Vec2 normal;
-				if (upperY >= spriteUpperY) normal = {  0.0f,  1.0f };
-				if (lowerY <  spriteLowerY) normal = {  0.0f, -1.0f };
-				else if (upperX >= spriteUpperX) normal = {  1.0f,  0.0f };
-				else if (lowerX <  spriteLowerX) normal = { -1.0f,  0.0f };
-				//else exit(1);
-
-				if (id == 0 && m_ID == 11) std::cout << "Normal: " << std::string(normal) << std::endl;
-
-
-				// Take steps to "uncollide" objects by using
-				// the normal to calculate the direction the 
-				// object should move towards
-				auto reflect = [](Vec2 incident, Vec2 normal) { return incident * 2.0f * normal.dot(incident) * normal; };
-				Vec2 direction = reflect(sprite->m_Position - newPosition, normal).normalise();
-				direction = { 0.0f, 0.0f };
-				Vec2 magnitude = (m_Velocity / (float)steps * (float)i) * 1.0f;// Assume masses of 1
-				//Vec2 currentVelocity = m_Velocity+ Vec2{0.01f, 0.01f};
-				m_Velocity = direction;
-			}
-			
-		}
-
-	}
-
-	m_Position = newPosition;
-
-	//if (!bCollided) m_Position += m_Velocity;
+	m_PhysicsBody->CreateFixture(&bodyBox, 0.0f);
 }
 
-Sprite::~Sprite() { s_Sprites.erase(m_ID); }
+void Sprite::AddDynamicPhysics(float density)
+{
+	if (m_PhysicsBody != nullptr) RemovePhysics();
+
+	// Define a body with position, etc
+	b2BodyDef bodyDefinition;
+	bodyDefinition.type = b2_dynamicBody;
+	bodyDefinition.position.Set(m_Position.x, m_Position.y);
+
+	// Create the body in the world
+	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
+	m_PhysicsBody->SetFixedRotation(true);
+
+	// Define shape, friction, density, etc
+	b2PolygonShape bodyBox;
+	bodyBox.SetAsBox(0.5f * (float)m_Width, 0.5f * (float)m_Height);
+
+	// Create fixture
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &bodyBox;
+	fixtureDef.density = density;
+	fixtureDef.friction = 1.0f;
+	m_PhysicsBody->CreateFixture(&fixtureDef);
+}
+
+void Sprite::RemovePhysics()
+{
+	if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody);
+	m_PhysicsBody = nullptr;
+}
+
+Sprite::~Sprite() { s_Sprites.erase(m_ID); if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody); }

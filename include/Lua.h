@@ -28,6 +28,7 @@ public:
 	int GetInt(int id);
 	float GetFloat(int id);
 	std::string GetString(int id);
+	bool GetBool(int id);
 
 	void PushNumber(int number);
 	void PushNumber(float number);

@@ -2,3 +2,4 @@ build/
 SFML/
 res/
 lua/
+box2d/

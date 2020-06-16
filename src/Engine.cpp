@@ -24,9 +24,13 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 	m_Lua.SetGlobalFunction("SetX",			lua_SetX);
 	m_Lua.SetGlobalFunction("SetY",			lua_SetY);
 	m_Lua.SetGlobalFunction("SetGravity",	lua_SetGravity);
-	m_Lua.SetGlobalFunction("SetPhysics",	lua_SetPhysics);
 	m_Lua.SetGlobalFunction("GetGravity",	lua_GetGravity);
+	m_Lua.SetGlobalFunction("AddPhysics",	lua_AddPhysics);
+	m_Lua.SetGlobalFunction("RemovePhysics",lua_RemovePhysics);
 	m_Lua.SetGlobalFunction("GetPhysics",	lua_GetPhysics);
+	m_Lua.SetGlobalFunction("AddForce",		lua_AddForce);
+	m_Lua.SetGlobalFunction("SetDensity",	lua_SetDensity);
+	m_Lua.SetGlobalFunction("GetDensity",	lua_GetDensity);
 }
 
 Sprite* Engine::GetSprite(unsigned int ID)
@@ -44,6 +48,12 @@ bool Engine::Update()
 	}
 
 	return !m_Window.ShouldClose();
+}
+
+void Engine::SetGravity(float g)
+{
+	Sprite::s_PhysicsWorld.SetGravity(b2Vec2(0, -g));
+	m_Gravity = g;
 }
 
 int Engine::OnLuaPrint(lua_State* L)
@@ -95,12 +105,22 @@ void Engine::EndFrame()
 #ifdef DEBUG
 	m_Timer.BeginTimer();
 #endif
+	constexpr float physicsSpeed = 1.0f / 60.0f;
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
-		// For every sprite, do physics with every other sprite
-		// Needs to be more efficient, we're doing everything twice!
-		if (sprite->m_bPhysics) sprite->ComputePhysicsForSprite(m_Timer.m_fDelta);
+		if (sprite->m_PhysicsBody != nullptr && (sprite->lastPhysicsPosition.x != sprite->m_Position.x || sprite->lastPhysicsPosition.y != sprite->m_Position.y))
+		{
+			sprite->m_PhysicsBody->SetTransform(b2Vec2(sprite->m_Position.x, sprite->m_Position.y), sprite->m_PhysicsBody->GetAngle());
+			sprite->m_PhysicsBody->SetAwake(true);
+		}
+		sprite->lastPhysicsPosition = sprite->m_Position;
 	}
+	Sprite::s_PhysicsWorld.Step(physicsSpeed, 6, 2);
+	for (auto&[id, sprite] : Sprite::s_Sprites)
+	{
+		if (sprite->m_PhysicsBody != nullptr) sprite->m_Position = { sprite->m_PhysicsBody->GetPosition().x, sprite->m_PhysicsBody->GetPosition().y };
+	}
+
 #ifdef DEBUG
 	float fPhysicsTime = m_Timer.EndTimer();
 #endif
@@ -121,7 +141,7 @@ void Engine::EndFrame()
 	
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
-		//if (sprite->m_bDrawCollider)
+		if (sprite->m_bDrawCollider)
 			Engine::Get().m_Window.DrawBoundingBox(sprite->m_Position * Vec2(1.0f, -1.0), Vec2((float)sprite->m_Width, (float)sprite->m_Height));
 	}
 #endif
@@ -270,37 +290,50 @@ int Engine::lua_SetY(lua_State* L)
 	return 1;
 }
 
+
 int Engine::lua_SetGravity(lua_State* L)
 {
-	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetGravity"); return 0; }
-
-	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
-	float gravity = Engine::Get().m_Lua.GetFloat(2);
-	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_fGravity = gravity;
-
-	return 0;
-}
-
-int Engine::lua_SetPhysics(lua_State* L)
-{
-	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
-
-	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
-	int physics = Engine::Get().m_Lua.GetInt(2);
-	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_bPhysics = physics;
-
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function SetGravity"); return 0; }
+	Engine::Get().SetGravity(Engine::Get().m_Lua.GetFloat(1));
 	return 0;
 }
 
 int Engine::lua_GetGravity(lua_State* L)
 {
-	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetGravity"); return 0; }
+	if (lua_gettop(L) != 0) { Log("Invalid number of arguments in function GetGravity"); return 0; }
+	Engine::Get().m_Lua.PushNumber(Engine::Get().m_Gravity);
+	return 1;
+}
+
+int Engine::lua_AddPhysics(lua_State* L)
+{
+	if (lua_gettop(L) < 2) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
 
 	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
-	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_fGravity);
-	else Engine::Get().m_Lua.PushNumber(-1);
+	bool dynamic = (unsigned int)Engine::Get().m_Lua.GetBool(2);
 
-	return 1;
+	if (lua_gettop(L) != 3 && dynamic) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
+
+	if (Sprite::s_Sprites.find(spriteID) == Sprite::s_Sprites.end()) return 0;
+
+	if (dynamic)
+	{
+		float density = Engine::Get().m_Lua.GetFloat(3);
+		Sprite::s_Sprites.at(spriteID)->AddDynamicPhysics(density);
+	}
+	else Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
+
+	return 0;
+}
+
+int Engine::lua_RemovePhysics(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->RemovePhysics();
+
+	return 0;
 }
 
 int Engine::lua_GetPhysics(lua_State* L)
@@ -308,8 +341,56 @@ int Engine::lua_GetPhysics(lua_State* L)
 	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetPhysics"); return 0; }
 
 	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
-	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushBool(Sprite::s_Sprites.at(spriteID)->m_bPhysics);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushBool(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr);
 	else Engine::Get().m_Lua.PushNumber(-1);
+
+	return 1;
+}
+
+int Engine::lua_AddForce(lua_State* L)
+{
+	if (lua_gettop(L) != 3) { Log("Invalid number of arguments in function AddForce"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float forceX = Engine::Get().m_Lua.GetFloat(2);
+	float forceY = Engine::Get().m_Lua.GetFloat(3);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		float originX = Sprite::s_Sprites.at(spriteID)->m_Position.x;
+		float originY = Sprite::s_Sprites.at(spriteID)->m_Position.y;
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->ApplyForce(b2Vec2(forceX, forceY), b2Vec2(originX, originY), true);
+	}
+
+	return 0;
+}
+
+int Engine::lua_SetDensity(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetDensity"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		float density = Engine::Get().m_Lua.GetFloat(1);
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetFixtureList()->SetDensity(density);
+	}
+
+	return 0;
+}
+
+int Engine::lua_GetDensity(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function SetDensity"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetFixtureList()->GetDensity());
+	}
+	else Engine::Get().m_Lua.PushNumber(-1.0f);
 
 	return 1;
 }

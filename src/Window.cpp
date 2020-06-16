@@ -55,14 +55,14 @@ void Window::DrawBoundingBox(Vec2 position, Vec2 size)
 
 void Window::SetCamera(Camera& camera) 
 { 
-	sf::View view(sf::Vector2f(camera.position.x, camera.position.y), sf::Vector2f(camera.size.x, camera.size.y * ((float)m_Height / (float)m_Width)));
+	sf::View view(sf::Vector2f(camera.position.x, -camera.position.y), sf::Vector2f(camera.size.x, camera.size.y * ((float)m_Height / (float)m_Width)));
 	m_Window.setView(view); 
 }
 
 Camera Window::GetDefaultCamera()
 {
 	Camera camera;
-	camera.position = Vec2(m_Window.getDefaultView().getCenter().x, m_Window.getDefaultView().getCenter().y);
+	camera.position = Vec2(m_Window.getDefaultView().getCenter().x, -m_Window.getDefaultView().getCenter().y);
 	camera.size = Vec2(m_Window.getDefaultView().getSize().x, m_Window.getDefaultView().getSize().y);
 	return camera;
 }

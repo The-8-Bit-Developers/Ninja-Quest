@@ -55,6 +55,9 @@ public:
 
 	Camera m_Camera;
 
+	void SetGravity(float g);
+	float m_Gravity = 10.0f;
+
 	Lua m_Lua;
 	static int OnLuaPrint(lua_State* L);
 	static int OnLuaError(lua_State* L);
@@ -69,9 +72,13 @@ public:
 	static int lua_SetX(lua_State* L);
 	static int lua_SetY(lua_State* L);
 	static int lua_SetGravity(lua_State* L);
-	static int lua_SetPhysics(lua_State* L);
 	static int lua_GetGravity(lua_State* L);
+	static int lua_AddPhysics(lua_State* L);
+	static int lua_RemovePhysics(lua_State* L);
 	static int lua_GetPhysics(lua_State* L);
+	static int lua_AddForce(lua_State* L);
+	static int lua_SetDensity(lua_State* L);
+	static int lua_GetDensity(lua_State* L);
 
 private:
 	Engine();

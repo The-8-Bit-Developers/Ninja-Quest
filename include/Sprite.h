@@ -3,6 +3,8 @@
 #define SPRITE_H
 
 #include <SFML/Graphics.hpp>
+#include <box2d/box2d.h>
+
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -11,15 +13,13 @@
 #include "Logger.h"
 
 /*
-	Generic sprite class that also contains all pointers to sprites
+	Generic sprite class that also manages world state
 */
 class Sprite
 {
 public:
 	Sprite(const std::string& fileName);
 	Sprite(sf::Texture& texture);
-	Sprite(const Sprite& sprite);
-	Sprite& operator=(const Sprite &rhs);
 	Sprite();
 	~Sprite();
 
@@ -54,18 +54,25 @@ public:
 
 	int m_Width;
 	int m_Height;
-	bool m_bPhysics;
-	float m_fGravity;
-	Vec2 m_Velocity;
 
 #ifdef DEBUG
-	bool m_bDrawCollider;
+	bool m_bDrawCollider = false;
 #endif
 
 public:
 	static Logger* logger;
 	static unsigned int s_SpriteIDCount;
 	static std::unordered_map<unsigned int, Sprite*> s_Sprites;
+
+public:
+	// Physics
+	static b2World s_PhysicsWorld;
+
+	void AddStaticPhysics();
+	void AddDynamicPhysics(float density);
+	void RemovePhysics();
+	b2Body* m_PhysicsBody = nullptr;
+	Vec2 lastPhysicsPosition;
 };
 
 #endif
