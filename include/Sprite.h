@@ -60,6 +60,8 @@ public:
 	bool m_bDrawCollider = false;
 #endif
 
+	int m_Layer;
+
 public:
 	static Logger* logger;
 	static unsigned int s_SpriteIDCount;
@@ -69,8 +71,10 @@ public:
 	// Physics
 	static b2World s_PhysicsWorld;
 
-	void AddStaticPhysics();
-	void AddDynamicPhysics(float density);
+	void AddStaticPhysics(float width, float height);
+	inline void AddStaticPhysics() { AddStaticPhysics((float)m_Width, (float)m_Height); }
+	void AddDynamicPhysics(float density, float width, float height);
+	inline void AddDynamicPhysics(float density) { AddDynamicPhysics(density, (float)m_Width, (float)m_Height); }
 	void RemovePhysics();
 	b2Body* m_PhysicsBody = nullptr;
 	Vec2 lastPhysicsPosition;

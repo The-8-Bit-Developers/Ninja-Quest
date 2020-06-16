@@ -32,6 +32,12 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 	m_Lua.SetGlobalFunction("AddForce",		lua_AddForce);
 	m_Lua.SetGlobalFunction("SetDensity",	lua_SetDensity);
 	m_Lua.SetGlobalFunction("GetDensity",	lua_GetDensity);
+	m_Lua.SetGlobalFunction("SetVelocityX",	lua_SetVelocityX);
+	m_Lua.SetGlobalFunction("GetVelocityX",	lua_GetVelocityX);
+	m_Lua.SetGlobalFunction("SetVelocityY", lua_SetVelocityY);
+	m_Lua.SetGlobalFunction("GetVelocityY", lua_GetVelocityY);
+	m_Lua.SetGlobalFunction("SetLayer",		lua_SetLayer);
+	m_Lua.SetGlobalFunction("GetLayer",		lua_GetLayer);
 }
 
 Sprite* Engine::GetSprite(unsigned int ID)
@@ -124,14 +130,26 @@ void Engine::EndFrame()
 
 #ifdef DEBUG
 	float fPhysicsTime = m_Timer.EndTimer();
-#endif
+#endif]
 
-	// Render sprites
-	for (auto& [id, sprite] : Sprite::s_Sprites)
-	{	
+	auto RenderSprite = [&](Sprite* sprite)
+	{
+		if (sprite->m_Layer < 0) return;
 		sprite->m_Sprite.setPosition(sprite->m_Position.x, -sprite->m_Position.y);
 		sprite->m_Sprite.setScale(sprite->m_Scale.x, sprite->m_Scale.y);
 		m_Window.Draw(sprite->m_Sprite);
+	};
+
+	// Get the highest layer of sprites
+	int highestLayer = 0;
+	for (auto&[id, sprite] : Sprite::s_Sprites)
+		if (sprite->m_Layer > highestLayer) highestLayer = sprite->m_Layer;
+
+	// Render each sprite layer
+	for (int i = 0; i <= highestLayer; ++i)
+	{
+		for (auto&[id, sprite] : Sprite::s_Sprites)
+			if (sprite->m_Layer == i) RenderSprite(sprite);
 	}
 
 	// If in debug mode, display FPS and draw bounding boxes
@@ -313,16 +331,21 @@ int Engine::lua_AddPhysics(lua_State* L)
 	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
 	bool dynamic = (unsigned int)Engine::Get().m_Lua.GetBool(2);
 
-	if (lua_gettop(L) != 3 && dynamic) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
+	if (lua_gettop(L) != 5 && lua_gettop(L) != 3 && dynamic) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
 
 	if (Sprite::s_Sprites.find(spriteID) == Sprite::s_Sprites.end()) return 0;
 
 	if (dynamic)
 	{
 		float density = Engine::Get().m_Lua.GetFloat(3);
-		Sprite::s_Sprites.at(spriteID)->AddDynamicPhysics(density);
+		if (lua_gettop(L) == 5) Sprite::s_Sprites.at(spriteID)->AddDynamicPhysics(density, Engine::Get().m_Lua.GetFloat(4), Engine::Get().m_Lua.GetFloat(5));
+		else Sprite::s_Sprites.at(spriteID)->AddDynamicPhysics(density);
 	}
-	else Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
+	else
+	{
+		if (lua_gettop(L) == 5) Sprite::s_Sprites.at(spriteID)->AddStaticPhysics(Engine::Get().m_Lua.GetFloat(4), Engine::Get().m_Lua.GetFloat(5));
+		Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
+	}
 
 	return 0;
 }
@@ -394,6 +417,88 @@ int Engine::lua_GetDensity(lua_State* L)
 	else Engine::Get().m_Lua.PushNumber(-1.0f);
 
 	return 1;
+}
+
+int Engine::lua_GetVelocityX(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetVelocityX"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetLinearVelocity().x);
+	}
+	else Engine::Get().m_Lua.PushNumber(-1.0f);
+
+	return 1;
+}
+
+int Engine::lua_GetVelocityY(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetVelocityY"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetLinearVelocity().y);
+	}
+	else Engine::Get().m_Lua.PushNumber(-1.0f);
+
+	return 1;
+}
+
+int Engine::lua_SetVelocityX(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetVelocityX"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float number = Engine::Get().m_Lua.GetFloat(2);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetLinearVelocity(b2Vec2(number, Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetLinearVelocity().y));
+	}
+
+	return 0;
+}
+
+int Engine::lua_SetVelocityY(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetVelocityY"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float number = Engine::Get().m_Lua.GetFloat(2);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetLinearVelocity(b2Vec2(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetLinearVelocity().x, number));
+	}
+
+	return 0;
+}
+
+int Engine::lua_GetLayer(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetLayer"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_Layer);
+	else Engine::Get().m_Lua.PushNumber(-1);
+
+	return 1;
+}
+
+int Engine::lua_SetLayer(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetLayer"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	int layer = Engine::Get().m_Lua.GetInt(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Layer = layer;
+
+	return 0;
 }
 
 Engine::~Engine() 

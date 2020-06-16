@@ -5,8 +5,7 @@ Window::Window() {}
 
 void Window::Create(const std::string& title, const int width, const int height)
 {
-	// Create a window with a tilebar and a close button - no option to resize
-	m_Window.create(sf::VideoMode(width, height), title, sf::Style::Titlebar | sf::Style::Close);
+	m_Window.create(sf::VideoMode(width, height), title, sf::Style::Default);
 	m_Window.setVerticalSyncEnabled(true); // Enable vsync
 
 	m_Width = width;

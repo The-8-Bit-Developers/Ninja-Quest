@@ -80,6 +80,12 @@ public:
 	static int lua_AddForce(lua_State* L);
 	static int lua_SetDensity(lua_State* L);
 	static int lua_GetDensity(lua_State* L);
+	static int lua_SetVelocityX(lua_State* L);
+	static int lua_GetVelocityX(lua_State* L);
+	static int lua_SetVelocityY(lua_State* L);
+	static int lua_GetVelocityY(lua_State* L);
+	static int lua_SetLayer(lua_State* L);
+	static int lua_GetLayer(lua_State* L);
 
 private:
 	Engine();
