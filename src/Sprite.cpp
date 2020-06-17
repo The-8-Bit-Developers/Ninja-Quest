@@ -91,4 +91,26 @@ void Sprite::RemovePhysics()
 	m_PhysicsBody = nullptr;
 }
 
-Sprite::~Sprite() { s_Sprites.erase(m_ID); if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody); }
+Component* Sprite::GetComponent(int id)
+{
+	return m_Components[id];
+}
+
+int Sprite::AddComponent(Component* component)
+{
+	m_Components.push_back(component);
+	component->m_ParentID = m_ID;
+	return m_Components.size() - 1;
+}
+
+void Sprite::RemoveComponent(int component)
+{
+	m_Components.erase(m_Components.begin() + component);
+}
+
+Sprite::~Sprite() 
+{ 
+	s_Sprites.erase(m_ID); 
+	if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody);
+	for (Component* c : m_Components) delete c;
+}

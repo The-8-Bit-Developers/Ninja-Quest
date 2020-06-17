@@ -43,6 +43,8 @@ public:
 	bool ShouldClose();
 	void Close();
 
+	inline bool IsFocused() { return m_Window.hasFocus(); }
+
 private:
 	sf::RenderWindow m_Window;
 

@@ -12,6 +12,7 @@
 #include "Vec2.h"
 #include "Logger.h"
 #include "Texture.h"
+#include "Component.h"
 
 /*
 	Generic sprite class that also manages world state
@@ -64,6 +65,11 @@ public:
 
 	int m_Layer;
 
+	Component* GetComponent(int id);
+	int AddComponent(Component* component);
+	void RemoveComponent(int component);
+	std::vector<Component*> m_Components;
+
 public:
 	static Logger* logger;
 	static unsigned int s_SpriteIDCount;
@@ -80,6 +86,7 @@ public:
 	void RemovePhysics();
 	b2Body* m_PhysicsBody = nullptr;
 	Vec2 lastPhysicsPosition;
+
 };
 
 #endif
