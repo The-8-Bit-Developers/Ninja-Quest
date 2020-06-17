@@ -12,7 +12,6 @@ Texture::Texture(const std::string& fileName)
 		delete m_Texture;
 		m_Texture = nullptr;
 	}
-	s_Logger->Log("New texture!");
 }
 
 Texture* Texture::GetTexture(const std::string& string)
