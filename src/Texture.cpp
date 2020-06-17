@@ -6,7 +6,12 @@ Logger* Texture::s_Logger = nullptr;
 Texture::Texture(const std::string& fileName)
 {
 	m_Texture = new sf::Texture();
-	if (!m_Texture->loadFromFile(fileName)) s_Logger->Err("Could not load texture " + fileName + " !");
+	if (!m_Texture->loadFromFile(fileName))
+	{
+		s_Logger->Err("Could not load texture " + fileName + " !");
+		delete m_Texture;
+		m_Texture = nullptr;
+	}
 	s_Logger->Log("New texture!");
 }
 
@@ -21,7 +26,7 @@ void Texture::CleanUp()
 {
 	for (auto& [name, texture] : s_Textures)
 	{
-		delete texture->m_Texture;
+		if (texture->m_Texture != nullptr) delete texture->m_Texture;
 		delete texture;
 	}
 }

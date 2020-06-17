@@ -27,9 +27,11 @@ public:
 	Vec2 m_Position;
 	Vec2 m_Scale;
 
-	sf::Texture* m_Texture;
+	sf::Texture* m_Texture = nullptr;
 	sf::Sprite m_Sprite;
 	
+	void SetTexture(sf::Texture* texture);
+
 	unsigned int m_ID;
 
 	// --- Physics ---

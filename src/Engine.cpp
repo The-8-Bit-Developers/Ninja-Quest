@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include  <iostream>
 
+#include "Raycast.h"
+
 #if DEBUG
 Engine::Engine() : m_Debugger(m_Logger), m_Lua(m_Logger, OnLuaPrint, OnLuaError) {}
 #else
@@ -38,6 +40,12 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 	m_Lua.SetGlobalFunction("GetVelocityY", lua_GetVelocityY);
 	m_Lua.SetGlobalFunction("SetLayer",		lua_SetLayer);
 	m_Lua.SetGlobalFunction("GetLayer",		lua_GetLayer);
+	m_Lua.SetGlobalFunction("SetTexture",	lua_SetTexture);
+	m_Lua.SetGlobalFunction("GetTexture",	lua_GetTexture);
+	m_Lua.SetGlobalFunction("LoadTexture",	lua_LoadTexture);
+	m_Lua.SetGlobalFunction("GetFriction",	lua_GetFriction);
+	m_Lua.SetGlobalFunction("SetFriction",	lua_SetFriction);
+	m_Lua.SetGlobalFunction("RayCast",		lua_RayCast);
 }
 
 Sprite* Engine::GetSprite(unsigned int ID)
@@ -499,6 +507,86 @@ int Engine::lua_SetLayer(lua_State* L)
 	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_Layer = layer;
 
 	return 0;
+}
+
+int Engine::lua_LoadTexture(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function LoadTexture"); return 0; }
+	Texture::GetTexture(Engine::Get().m_Lua.GetString(1));
+
+	return 0;
+}
+
+int Engine::lua_SetTexture(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetTexture"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	std::string fileName = Engine::Get().m_Lua.GetString(2);
+	if (lua_gettop(L) == 2 && Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
+		if (Texture::s_Textures.find(fileName) != Texture::s_Textures.end())
+			if (Texture::s_Textures.at(fileName)->m_Texture != nullptr)
+				Sprite::s_Sprites.at(spriteID)->SetTexture(Texture::GetTexture(fileName)->m_Texture);
+
+	return 0;
+}
+
+int Engine::lua_GetTexture(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetTexture"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	std::string returnValue = std::to_string(spriteID);
+	
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
+	{
+		// Go through each texture until the right one is found
+		sf::Texture* texture = Sprite::s_Sprites.at(spriteID)->m_Texture;
+		for (auto& [key, value] : Texture::s_Textures)
+			if (value->m_Texture == texture)
+			{
+				returnValue = key;
+			}	
+	}
+	
+	Engine::Get().m_Lua.PushString(returnValue);
+	return 1;
+}
+
+int Engine::lua_SetFriction(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetFriction"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	float friction = Engine::Get().m_Lua.GetFloat(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetFixtureList()->SetFriction(friction);
+
+	return 0;
+}
+
+int Engine::lua_GetFriction(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetFriction"); return 0; }
+
+	unsigned int spriteID = (unsigned int)Engine::Get().m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end()) Engine::Get().m_Lua.PushNumber(Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetFixtureList()->GetFriction());
+	else Engine::Get().m_Lua.PushNumber(-1);
+
+	return 1;
+}
+
+int Engine::lua_RayCast(lua_State* L)
+{
+	if (lua_gettop(L) != 4) { Log("Invalid number of arguments in function RayCast"); return 0; }
+
+	float x = Engine::Get().m_Lua.GetFloat(1);
+	float y = Engine::Get().m_Lua.GetFloat(2);
+	float dirX = Engine::Get().m_Lua.GetFloat(3);
+	float dirY = Engine::Get().m_Lua.GetFloat(4);
+	
+	Engine::Get().m_Lua.PushBool(DoRaycast({ x, y }, { dirX, dirY }));
+
+	return 1;
 }
 
 Engine::~Engine() 

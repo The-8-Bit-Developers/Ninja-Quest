@@ -53,6 +53,12 @@ void Sprite::AddStaticPhysics(float width, float height)
 	m_PhysicsBody->CreateFixture(&bodyBox, 0.0f);
 }
 
+void Sprite::SetTexture(sf::Texture* texture)
+{
+	m_Texture = texture;
+	m_Sprite.setTexture(*texture);
+}
+
 void Sprite::AddDynamicPhysics(float density, float width, float height)
 {
 	if (m_PhysicsBody != nullptr) RemovePhysics();
@@ -74,8 +80,9 @@ void Sprite::AddDynamicPhysics(float density, float width, float height)
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &bodyBox;
 	fixtureDef.density = density;
-	fixtureDef.friction = 1.0f;
+	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);
+
 }
 
 void Sprite::RemovePhysics()

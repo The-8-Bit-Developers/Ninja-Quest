@@ -1,12 +1,15 @@
 #include "Engine.h"
 
 #include <lua/lua.hpp>
+#include <box2d/box2d.h>
+
+#include "Raycast.h"
 
 int main()
 {
 	Engine::Get().Create("Engine test", 800, 600);
 
-	Engine::Get().m_Lua.ExecuteFile("game.lua");
+	Engine::Get().m_Lua.ExecuteFile("player.lua");
 	Engine::Get().m_Lua.CallGlobalFunction("OnUserCreate");
 
 	while (Engine::Get().Update())

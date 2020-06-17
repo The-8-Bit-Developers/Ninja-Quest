@@ -7,7 +7,7 @@ void Window::Create(const std::string& title, const int width, const int height)
 {
 	m_Window.create(sf::VideoMode(width, height), title, sf::Style::Default);
 	m_Window.setVerticalSyncEnabled(true); // Enable vsync
-
+	m_Window.setFramerateLimit(60); // Box2D sucks :( TODO: fix
 	m_Width = width;
 	m_Height = height;
 }

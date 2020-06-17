@@ -86,6 +86,12 @@ public:
 	static int lua_GetVelocityY(lua_State* L);
 	static int lua_SetLayer(lua_State* L);
 	static int lua_GetLayer(lua_State* L);
+	static int lua_LoadTexture(lua_State* L);
+	static int lua_SetTexture(lua_State* L);
+	static int lua_GetTexture(lua_State* L);
+	static int lua_SetFriction(lua_State* L);
+	static int lua_GetFriction(lua_State* L);
+	static int lua_RayCast(lua_State* L);
 
 private:
 	Engine();
