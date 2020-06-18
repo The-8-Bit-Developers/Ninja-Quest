@@ -14,6 +14,7 @@ class LuaComponent : public Component
 	
 public:
 	LuaComponent(const std::string& fileName);
+	~LuaComponent() override {}
 	void OnUpdate() override;
 	
 	static LuaComponent* s_CurrentInstance;

@@ -49,7 +49,7 @@ int Engine::OnLuaPrint(lua_State* L)
 	for (int i = 1; i <= nargs; i++) // Can't call log because of my fancy macro, ha ha
 	{
 		if (lua_tostring(L, i) != NULL) message += std::string(lua_tostring(L, i)) + " ";
-		else if (lua_toboolean(L, i) != NULL) message += lua_toboolean(L, i) ? "true " : "false "; 
+		else if (lua_isboolean(L, i)) message += lua_toboolean(L, i) ? "true " : "false "; 
 		else message += "NULL";
 	}
 
@@ -113,7 +113,7 @@ void Engine::EndFrame()
 
 #ifdef DEBUG
 	float fPhysicsTime = m_Timer.EndTimer();
-#endif]
+#endif
 
 	auto RenderSprite = [&](Sprite* sprite)
 	{
