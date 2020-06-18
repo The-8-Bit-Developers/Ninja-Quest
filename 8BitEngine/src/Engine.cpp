@@ -30,8 +30,17 @@ bool Engine::Update()
 	while (m_Window.GetEvent(event))
 	{
 		if (event.type == sf::Event::Closed)			m_Window.Close();
+		if (event.type == sf::Event::Resized)
+		{
+			// update the view to the new size of the window and keep the center
+			//m_Window.setView(sf::View(window.getView().getCenter(), sf::Vector2f((float)event.size.width, (float)event.size.height)));
+			//m_Camera.position
+		}
 	}
-	
+
+	m_Window.SetCamera(m_Camera);
+	m_DebugCamera = m_Window.GetDefaultCamera();
+
 	return !m_Window.ShouldClose();
 }
 
@@ -82,7 +91,7 @@ void Engine::BeginFrame()
 			c->OnUpdate();
 
 	// Render game
-	m_Window.Clear(sf::Color::Black);
+	m_Window.Clear(sf::Color((uint8_t)m_BackgroundR, (uint8_t)m_BackgroundG, (uint8_t)m_BackgroundB));
 }
 
 #include <thread>
@@ -138,7 +147,7 @@ void Engine::EndFrame()
 	// If in debug mode, display FPS and draw bounding boxes
 #ifdef DEBUG
 	m_Window.SetCamera(m_DebugCamera);
-	m_Debugger.Draw(m_Window, m_Timer.m_fDelta, fPhysicsTime);
+	m_Debugger.Draw(m_Window, m_Timer.m_fDelta, fPhysicsTime, m_BackgroundR == 255);
 	m_Window.SetCamera(m_Camera);
 	
 	for (auto&[id, sprite] : Sprite::s_Sprites)

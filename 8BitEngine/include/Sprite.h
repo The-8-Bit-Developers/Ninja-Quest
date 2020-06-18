@@ -32,6 +32,7 @@ public:
 	sf::Sprite m_Sprite;
 	
 	void SetTexture(sf::Texture* texture);
+	void SetTexture(const std::string& fileName);
 
 	unsigned int m_ID;
 
@@ -53,8 +54,6 @@ public:
 		return (otherMax.x > thisMin.x && otherMin.x < thisMax.x
 			&& otherMax.y > thisMin.y && otherMin.y < thisMax.y);
 	}
-
-	void ComputePhysicsForSprite(float deltaTime);
 
 	int m_Width;
 	int m_Height;

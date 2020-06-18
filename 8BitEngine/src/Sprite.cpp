@@ -17,6 +17,8 @@ Sprite::Sprite(const std::string& fileName) : m_Scale(1.0f, 1.0f), m_Layer(0)
 	
 	m_Width = m_Texture->getSize().x;
 	m_Height = m_Texture->getSize().y;
+
+	m_PhysicsBody = nullptr;
 }
 
 Sprite::Sprite(sf::Texture* texture) : m_Scale(1.0f, 1.0f), m_Layer(0)
@@ -30,9 +32,17 @@ Sprite::Sprite(sf::Texture* texture) : m_Scale(1.0f, 1.0f), m_Layer(0)
 
 	m_Width = m_Texture->getSize().x;
 	m_Height = m_Texture->getSize().y;
+
+	m_PhysicsBody = nullptr;
 }
 
-Sprite::Sprite() : m_Scale(1.0f, 1.0f), m_Width(0), m_Height(0), m_Layer(0) { s_SpriteIDCount++; s_Sprites[m_ID] = this; }
+Sprite::Sprite() : m_Scale(1.0f, 1.0f), m_Width(0), m_Height(0), m_Layer(0) 
+{ 
+	m_ID = s_SpriteIDCount;
+	s_SpriteIDCount++; 
+	s_Sprites[m_ID] = this;
+	m_PhysicsBody = nullptr; 
+}
 
 void Sprite::AddStaticPhysics(float width, float height)
 {
@@ -48,7 +58,7 @@ void Sprite::AddStaticPhysics(float width, float height)
 
 	// Define shape, friction, density, etc
 	b2PolygonShape bodyBox;
-	bodyBox.SetAsBox(0.5f * (float)width, 0.5f * (float)height);
+	bodyBox.SetAsBox(0.5f * (float)width * m_Scale.x, 0.5f * (float)height * m_Scale.y);
 
 	m_PhysicsBody->CreateFixture(&bodyBox, 0.0f);
 }
@@ -57,6 +67,11 @@ void Sprite::SetTexture(sf::Texture* texture)
 {
 	m_Texture = texture;
 	m_Sprite.setTexture(*texture);
+}
+
+void Sprite::SetTexture(const std::string & fileName)
+{
+	SetTexture(Texture::GetTexture(fileName)->m_Texture);
 }
 
 void Sprite::AddDynamicPhysics(float density, float width, float height)
@@ -111,6 +126,7 @@ void Sprite::RemoveComponent(int component)
 Sprite::~Sprite() 
 { 
 	s_Sprites.erase(m_ID); 
+	s_SpriteIDCount--;
 	if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody);
 	for (Component* c : m_Components) delete c;
 }

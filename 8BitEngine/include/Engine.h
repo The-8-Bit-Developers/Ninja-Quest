@@ -63,8 +63,19 @@ public:
 	static int OnLuaError(lua_State* L);
 	std::vector<Sprite*> m_luaSprites;
 
+	inline void SetBackgroundColour(float r, float g, float b)
+	{
+		m_BackgroundR = r;
+		m_BackgroundG = g;
+		m_BackgroundB = b;
+	}
+
 private:
 	Engine();
+
+	float m_BackgroundR = 0.0f;
+	float m_BackgroundG = 0.0f;
+	float m_BackgroundB = 0.0f;
 
 #ifdef DEBUG
 	Camera m_DebugCamera;

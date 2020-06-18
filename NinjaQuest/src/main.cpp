@@ -2,13 +2,35 @@
 #include <memory>
 
 #include <Engine.h>
-#include <Raycast.h>
 #include <LuaComponent.h>
+
+#include "Scene.h"
+#include "SplashScreen.h"
+#include "MainMenu.h"
 
 int main()
 {
-	Engine::Get().Create("Engine test", 800, 600);
+	Engine::Get().Create("Ninja Quest", 800, 600);
 
+	// Create array of scenes
+	constexpr int nScenes = 2;
+	Scene* scenes[nScenes];
+	for (int i = 0; i < nScenes; ++i) scenes[i] = nullptr;
+	unsigned int sceneID;
+
+	// Scene clean up
+	auto CleanScenes = [&]()
+	{
+		if (scenes[0] != nullptr) { delete (SplashScreen*)scenes[0]; scenes[0] = nullptr; }
+		if (scenes[1] != nullptr) { delete (MainMenu*)scenes[1]; scenes[1] = nullptr; }
+	};
+
+	// Start splash screen scene
+	scenes[Scene::SPLASH] = new SplashScreen();
+	scenes[Scene::SPLASH]->OnStart();
+	sceneID = Scene::SPLASH;
+
+	/*
 	// Set gravity
 	Engine::Get().SetGravity(200.0f);
 
@@ -24,13 +46,35 @@ int main()
 		ground[i]->m_Position = Vec2(i * 32.0f - 5.0f*32.0f, -50.0f);
 		ground[i]->AddStaticPhysics();
 	}
+	*/
 
 	while (Engine::Get().Update())
 	{
 		Engine::Get().BeginFrame();
 
+		int sceneStatus = scenes[sceneID]->OnUpdate();
+		if (sceneStatus != -1)
+		{
+			// End scene, null pointer and delete objects
+			scenes[sceneID]->OnEnd();
+			CleanScenes();
+
+			sceneID = sceneStatus;
+			switch (sceneStatus)
+			{
+				case Scene::MENU:
+					scenes[Scene::MENU] = new MainMenu();
+					scenes[Scene::MENU]->OnStart();
+				break;
+
+				default: CleanScenes(); break;
+			}
+		}
+
 		Engine::Get().EndFrame();
 	}
+
+	CleanScenes();
 
 	return 0;
 

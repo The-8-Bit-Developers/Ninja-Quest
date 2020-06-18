@@ -8,7 +8,7 @@ Debugger::Debugger(Logger& _logger)
 	logger = &_logger;
 }
 
-void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime)
+void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool invert)
 {
 	const_cast<sf::Texture&>(m_Font.getTexture(30)).setSmooth(false);
 	const_cast<sf::Texture&>(m_Font.getTexture(20)).setSmooth(false);
@@ -16,7 +16,7 @@ void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime)
 	sf::Text text("", m_Font);
 	text.setCharacterSize(30);
 	text.setStyle(sf::Text::Bold);
-	text.setFillColor(sf::Color::White);
+	text.setFillColor(invert ? sf::Color::Black : sf::Color::White);
 
 	int lineCount = 0;
 	const int lineHeight = text.getCharacterSize();

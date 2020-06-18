@@ -17,7 +17,7 @@ public:
 	Debugger(Logger& _logger);
 	~Debugger();
 
-	void Draw(Window& window, float fElapsedTime, float physicsTime);
+	void Draw(Window& window, float fElapsedTime, float physicsTime, bool invert);
 
 private:
 	sf::Font m_Font;

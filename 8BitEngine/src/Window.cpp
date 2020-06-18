@@ -8,8 +8,6 @@ void Window::Create(const std::string& title, const int width, const int height)
 	m_Window.create(sf::VideoMode(width, height), title, sf::Style::Default);
 	m_Window.setVerticalSyncEnabled(true); // Enable vsync
 	m_Window.setFramerateLimit(60); // Box2D sucks :( TODO: fix
-	m_Width = width;
-	m_Height = height;
 }
 
 void Window::SetPosition(int x, int y) { m_Window.setPosition(sf::Vector2i(x, y)); }
@@ -28,7 +26,7 @@ void Window::Draw(sf::Sprite& sprite) { m_Window.draw(sprite); }
 void Window::Draw(sf::Text& text) { m_Window.draw(text); }
 void Window::DrawBoundingBox(Vec2 position, Vec2 size)
 {
-	const float scale = 1.0f;
+	const float scale = 1.0f;	
 
 	sf::RectangleShape left;
 	left.setPosition(sf::Vector2f(position.x, position.y));
@@ -54,15 +52,20 @@ void Window::DrawBoundingBox(Vec2 position, Vec2 size)
 
 void Window::SetCamera(Camera& camera) 
 { 
-	sf::View view(sf::Vector2f(camera.position.x, -camera.position.y), sf::Vector2f(camera.size.x, camera.size.y * ((float)m_Height / (float)m_Width)));
+	// We know the size.x to be just the size,
+	// but the y size must change depending on the aspect ratio
+	float height = camera.size.x * ((float)GetHeight() / (float)GetWidth());
+
+	std::cout << std::to_string(GetWidth()) << std::endl;
+	sf::View view(sf::Vector2f(camera.position.x, -camera.position.y), sf::Vector2f(camera.size.x, height));
 	m_Window.setView(view); 
 }
 
 Camera Window::GetDefaultCamera()
 {
 	Camera camera;
-	camera.position = Vec2(m_Window.getDefaultView().getCenter().x, -m_Window.getDefaultView().getCenter().y);
-	camera.size = Vec2(m_Window.getDefaultView().getSize().x, m_Window.getDefaultView().getSize().y);
+	camera.position = Vec2((float)GetWidth() / 2, -(float)GetHeight() / 2);
+	camera.size = Vec2((float)GetWidth(), (float)GetHeight() * ((float)GetHeight() / (float)GetWidth()));
 	return camera;
 }
 
