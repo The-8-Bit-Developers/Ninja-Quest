@@ -1,5 +1,5 @@
-build/
-SFML/
 res/
-lua/
 box2d/
+SFML/
+lua/
+build/
