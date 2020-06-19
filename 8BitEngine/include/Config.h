@@ -5,9 +5,9 @@
 #include <string>
 
 #ifdef DEBUG
-constexpr char* RES_PATH = "../../res/";
+constexpr const char * RES_PATH = "../../res/";
 #else
-constexpr char* RES_PATH = "./res/";
+constexpr const char * RES_PATH = "./res/";
 #endif
 
 #endif

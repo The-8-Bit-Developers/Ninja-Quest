@@ -5,7 +5,7 @@ class Scene
 {
 public:
 
-	~Scene() {}
+	virtual ~Scene() = 0;
 
 	virtual void OnStart() = 0;
 	virtual int OnUpdate() = 0;
