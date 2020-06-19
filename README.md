@@ -12,7 +12,7 @@ Ninja Quest is a fun 2D 8-Bit game written for the 154th week of [weeklygamejam.
 * Lua is required for the game's scripts
 * Box2D is required for the game's physics
 
-## Building
+## Building and running from source
 1) Download Lua binaries for your platform (or build from source on Linux)
 2) Extract the folder into the project directory
 3) rename it to "lua", and the include folder inside to "lua" as well
