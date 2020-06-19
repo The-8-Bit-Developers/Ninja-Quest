@@ -5,8 +5,6 @@ project(NinjaQuest)
 set(subdirectory_path "${CMAKE_CURRENT_LIST_DIR}")
 
 # Debug or release mode
-set (CMAKE_CONFIGURATION_TYPES ${debug_or_release_mode})
-set (CMAKE_BUILD_TYPE ${debug_or_release_mode})
 if(NOT CMAKE_BUILD_TYPE MATCHES "Release")
 	add_definitions (-DDEBUG)
 endif(NOT CMAKE_BUILD_TYPE MATCHES "Release")

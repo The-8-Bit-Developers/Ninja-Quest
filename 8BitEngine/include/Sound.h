@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Logger.h"
+#include "Config.h"
 
 class Sound
 {

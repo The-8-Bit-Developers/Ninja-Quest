@@ -5,11 +5,11 @@ std::unordered_map<std::string, sf::SoundBuffer*> Sound::s_Buffers;
 
 Sound::Sound(const std::string& fileName)
 {
-	if (s_Buffers.find("../../res/" + fileName) == s_Buffers.end()) 
-		s_Buffers.emplace("../../res/" + fileName, new sf::SoundBuffer());
+	if (s_Buffers.find(RES_PATH + fileName) == s_Buffers.end()) 
+		s_Buffers.emplace(RES_PATH + fileName, new sf::SoundBuffer());
 
-	if (!s_Buffers.at("../../res/" + fileName)->loadFromFile("../../res/" + fileName)) s_Logger->Err("Could not load audio file " + fileName + "!");
-	m_Sound.setBuffer(*s_Buffers.at("../../res/" + fileName));
+	if (!s_Buffers.at(RES_PATH + fileName)->loadFromFile(RES_PATH + fileName)) s_Logger->Err("Could not load audio file " + fileName + "!");
+	m_Sound.setBuffer(*s_Buffers.at(RES_PATH + fileName));
 }
 
 void Sound::Play()				{ m_Sound.play(); }

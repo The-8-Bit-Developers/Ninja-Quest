@@ -1,4 +1,5 @@
 #include "Lua.h"
+#include "Config.h"
 
 Lua::Lua(Logger& _logger, lua_CFunction OnPrint, lua_CFunction OnError) : logger(_logger)
 {
@@ -20,7 +21,7 @@ void Lua::ExecuteString(const std::string& string)
 
 void Lua::ExecuteFile(const std::string& fileName)
 {
-	if (luaL_dofile(L, std::string("../../res/" + fileName).c_str()) != LUA_OK)
+	if (luaL_dofile(L, std::string(RES_PATH + fileName).c_str()) != LUA_OK)
 		logger.Err("Lua error with file " + fileName + ": " + std::string(lua_tostring(L, -1)));
 }
 

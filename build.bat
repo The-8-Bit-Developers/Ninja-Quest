@@ -1,8 +1,8 @@
 mkdir build
 cd build
-cmake .. -G "Visual Studio 15 2017"
-cmake --build .
-copy NinjaQuest\Debug\NinjaQuest.exe .\NinjaQuest\.
-cd NinjaQuest
+cmake .. -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release
+cmake --build . --target NinjaQuest --config Release
+copy NinjaQuest\Release\NinjaQuest.exe ..\.
+cd ..
 .\NinjaQuest.exe
 pause

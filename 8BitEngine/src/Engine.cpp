@@ -6,7 +6,7 @@
 #if DEBUG
 Engine::Engine() : m_Debugger(m_Logger) {}
 #else
-Engine::Engine() : m_Lua(m_Logger, OnLuaPrint, OnLuaError) {}
+Engine::Engine() {}
 #endif
 
 void Engine::Create(const std::string& windowName, const int windowWidth, const int windowHeight)

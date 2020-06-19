@@ -80,7 +80,7 @@ public:
 		return m_Window.GetHeight() / 2.0f - (text.getLocalBounds().height / 2.0f);
 	}
 
-	inline void LoadFont(sf::Font& font, const std::string& fileName) { font.loadFromFile("../../res/" + fileName); }
+	inline void LoadFont(sf::Font& font, const std::string& fileName) { font.loadFromFile(RES_PATH + fileName); }
 
 	inline void SetBackgroundColour(float r, float g, float b)
 	{
@@ -96,9 +96,7 @@ private:
 	float m_BackgroundG = 0.0f;
 	float m_BackgroundB = 0.0f;
 
-#ifdef DEBUG
 	Camera m_DebugCamera;
-#endif
 };
 
 #endif

@@ -1,10 +1,11 @@
 #ifdef DEBUG
 
 #include "Debugger.h"
+#include "Config.h"
 
 Debugger::Debugger(Logger& _logger)
 {
-	if (!m_Font.loadFromFile("../../res/Munro.ttf")) _logger.Err("Debug font could not be loaded!");
+	if (!m_Font.loadFromFile(std::string(RES_PATH) + "Munro.ttf")) _logger.Err("Debug font could not be loaded!");
 	logger = &_logger;
 }
 

@@ -5,8 +5,6 @@ project(8BitEngine)
 set(subdirectory_path "${CMAKE_CURRENT_LIST_DIR}")
 
 # Debug or release mode
-set (CMAKE_CONFIGURATION_TYPES ${debug_or_release_mode})
-set (CMAKE_BUILD_TYPE ${debug_or_release_mode})
 if(NOT CMAKE_BUILD_TYPE MATCHES "Release")
 	add_definitions (-DDEBUG)
 endif(NOT CMAKE_BUILD_TYPE MATCHES "Release")
@@ -70,7 +68,7 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 # Add box-2d
 if(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(${PROJECT_NAME} box2d-d)
-else(NOT CMAKE_BUILD_TYPE MATCHES "Release")
+else(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	target_link_libraries(${PROJECT_NAME} box2d)
 endif(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 

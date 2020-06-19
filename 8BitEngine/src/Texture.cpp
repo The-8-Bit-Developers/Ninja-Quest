@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Config.h"
 
 std::unordered_map<std::string, Texture*> Texture::s_Textures;
 Logger* Texture::s_Logger = nullptr;
@@ -17,7 +18,7 @@ Texture::Texture(const std::string& fileName)
 Texture* Texture::GetTexture(const std::string& string)
 {
 	// Create texture if it does't exist, then return it
-	if (s_Textures.find(string) == s_Textures.end()) s_Textures[string] = new Texture("../../res/" + string);
+	if (s_Textures.find(string) == s_Textures.end()) s_Textures[string] = new Texture(RES_PATH + string);
 	return s_Textures.at(string);
 }
 
