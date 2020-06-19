@@ -14,6 +14,7 @@ void Engine::Create(const std::string& windowName, const int windowWidth, const 
 	m_Window.Create(windowName, windowWidth, windowHeight);
 	Sprite::logger = &m_Logger;
 	Texture::s_Logger = &m_Logger;
+	Sound::s_Logger = &m_Logger;
 
 	m_DebugCamera = m_Window.GetDefaultCamera();
 }
@@ -32,9 +33,9 @@ bool Engine::Update()
 		if (event.type == sf::Event::Closed)			m_Window.Close();
 		if (event.type == sf::Event::Resized)
 		{
-			// update the view to the new size of the window and keep the center
-			//m_Window.setView(sf::View(window.getView().getCenter(), sf::Vector2f((float)event.size.width, (float)event.size.height)));
-			//m_Camera.position
+			// Set min size of 800x600
+			if (event.size.width < 800) m_Window.SetSize(800, m_Window.GetHeight());
+			if (event.size.height < 600) m_Window.SetSize(m_Window.GetWidth(), 600);
 		}
 	}
 

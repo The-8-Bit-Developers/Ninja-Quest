@@ -5,10 +5,15 @@
 #include <Sprite.h>
 
 #include "Scene.h"
+#include "Sound.h"
+
+constexpr int menuItems = 3;
 
 class MainMenu : public Scene
 {
 public:
+
+	MainMenu();
 
 	void OnStart() override;
 	int OnUpdate() override;
@@ -16,7 +21,22 @@ public:
 
 private:
 
-	Sprite background;
+	Sprite* m_GroundSprites;
+	Sprite m_Player;
+
+	sf::Font m_Font;
+
+	sf::Text m_Title;
+
+	sf::Text m_Menu[menuItems];
+	int m_nMenuItem = 0;
+
+	sf::Color selectedColour =  sf::Color(255, 255, 255);
+	sf::Color secondaryColour = sf::Color(200, 200, 200);
+
+	int m_KeysPressed[2];
+
+	Sound m_Music;
 
 };
 

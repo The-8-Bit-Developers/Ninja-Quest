@@ -22,7 +22,7 @@ void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool 
 	const int lineHeight = text.getCharacterSize();
 
 	float x = 10;
-	float y = 75;
+	float y = 10;
 
 	// Draw fps
 	text.setPosition(sf::Vector2f(x, y));

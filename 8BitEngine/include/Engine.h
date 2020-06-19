@@ -12,6 +12,7 @@
 #include "Lua.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Sound.h"
 
 #ifdef DEBUG
 #include "Debugger.h"
@@ -62,6 +63,24 @@ public:
 	static int OnLuaPrint(lua_State* L);
 	static int OnLuaError(lua_State* L);
 	std::vector<Sprite*> m_luaSprites;
+
+	inline void DrawText(sf::Text& text) 
+	{
+		const_cast<sf::Texture&>(text.getFont()->getTexture(30)).setSmooth(false);
+		m_Window.SetCamera(m_DebugCamera);
+		m_Window.Draw(text); 
+		m_Window.SetCamera(m_Camera);
+	}
+	inline float GetTextCentreX(sf::Text& text)
+	{
+		return m_Window.GetWidth() / 2.0f - (text.getLocalBounds().width / 2.0f);
+	}
+	inline float GetTextCentreY(sf::Text& text)
+	{
+		return m_Window.GetHeight() / 2.0f - (text.getLocalBounds().height / 2.0f);
+	}
+
+	inline void LoadFont(sf::Font& font, const std::string& fileName) { font.loadFromFile("../../res/" + fileName); }
 
 	inline void SetBackgroundColour(float r, float g, float b)
 	{

@@ -56,7 +56,6 @@ void Window::SetCamera(Camera& camera)
 	// but the y size must change depending on the aspect ratio
 	float height = camera.size.x * ((float)GetHeight() / (float)GetWidth());
 
-	std::cout << std::to_string(GetWidth()) << std::endl;
 	sf::View view(sf::Vector2f(camera.position.x, -camera.position.y), sf::Vector2f(camera.size.x, height));
 	m_Window.setView(view); 
 }
