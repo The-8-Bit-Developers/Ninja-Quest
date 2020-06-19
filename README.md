@@ -35,5 +35,5 @@ cmake --build .
 8) Run ./buildDebug.sh, build.bat or buildDebug.bat depending on if you're on MacOS or Windows, and if you want debug or release mode.
 
 ## Authors
-[Luka Warren](http://lukawarren.com) - https://github.com/TheUltimateKerbonaut/
-[Arthur Owenson] - https://github.com/SuperArtoo
+* Luka Warren
+* Arthur Owenson
