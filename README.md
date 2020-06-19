@@ -13,10 +13,10 @@ Ninja Quest is a fun 2D 8-Bit game written for the 154th week of [weeklygamejam.
 * Box2D is required for the game's physics
 
 ## Building
-1) Download Lua binaries for Mac OS
+1) Download Lua binaries for your platform (or build from source on Linux)
 2) Extract the folder into the project directory
 3) rename it to "lua", and the include folder inside to "lua" as well
-4) Download SFML for Mac OS. Again, extract it into the project directory, and rename the folder to SFML.
+4) Download SFML for your platform (or build from source on Linux). Again, extract it into the project directory, and rename the folder to SFML.
 5) Download Box2D. You will need to build this from source, so do (note that when building for release mode, you must build box2d in release mode too, and call the library box2d, not box2d-d):
 ```
 cd ~/Downloads
