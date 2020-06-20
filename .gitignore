@@ -3,3 +3,4 @@ SFML/
 lua/
 build/
 NinjaQuest.exe
+.vscode/settings.json

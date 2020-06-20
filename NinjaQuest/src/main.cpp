@@ -60,15 +60,8 @@ int main()
 			CleanScenes();
 
 			sceneID = sceneStatus;
-			switch (sceneStatus)
-			{
-				case Scene::MENU:
-					scenes[Scene::MENU] = new MainMenu();
-					scenes[Scene::MENU]->OnStart();
-				break;
-
-				default: CleanScenes(); break;
-			}
+			scenes[sceneStatus] = new MainMenu();
+			scenes[sceneStatus]->OnStart();
 		}
 
 		Engine::Get().EndFrame();
