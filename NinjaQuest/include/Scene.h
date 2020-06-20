@@ -15,6 +15,7 @@ public:
 	{
 		SPLASH = 0,
 		MENU = 1,
+		GAME_TEST = 2
 	};
 
 };

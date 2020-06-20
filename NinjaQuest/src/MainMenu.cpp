@@ -112,6 +112,7 @@ int MainMenu::OnUpdate()
 		m_KeysPressed[0] = Engine::Get().GetKeyDown(sf::Keyboard::Up);
 		m_KeysPressed[1] = Engine::Get().GetKeyDown(sf::Keyboard::Down);
 
+		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 0) return GAME_TEST;
 		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 1) m_Screen = ABOUT;
 		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 2) Engine::Get().m_Window.Close();
 	}
