@@ -26,6 +26,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /W4 /WX /O2")
 endif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
+# Find SFML
+if (UNIX AND NOT APPLE)
+	include_directories(${PROJECT_NAME} ${subdirectory_path}/../SFML/)
+	link_directories(${subdirectory_path}/../SFML/lib/)
+endif()
+
 # Find Lua
 link_directories(${subdirectory_path}/../lua/)
 

@@ -34,17 +34,20 @@ endif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(SFML_STATIC_LIBRARIES TRUE)
 	set(CMAKE_FIND_FRAMEWORK LAST)
-endif (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
-# Find SFML - main is required unless on MacOS
+# Find SFML - main is required unless on MacOS or Linux
 set(SFML_DIR "${subdirectory_path}/../SFML/lib/cmake/SFML")
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	find_package(SFML 2.5 COMPONENTS graphics audio main REQUIRED)
-endif (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
+if (UNIX AND NOT APPLE)
+	include_directories(${PROJECT_NAME} ${subdirectory_path}/../SFML/)
+	link_directories(${subdirectory_path}/../SFML/lib/)
+endif()
 
 # Find Lua
 link_directories(${subdirectory_path}/../lua/)
@@ -57,13 +60,13 @@ include_directories(${PROJECT_NAME} ${subdirectory_path}/include/ ${subdirectory
 #add_executable(${PROJECT_NAME} ${source_files} ${include_files} ${lua_source_files} ${lua_scripts})
 add_library(${PROJECT_NAME} ${source_files} ${include_files} ${lua_source_files})
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (NOT UNIX)
 	target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-main lua53)
-endif (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endif (NOT UNIX)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio lua53)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (UNIX)
+	target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-audio sfml-system lua53)
+endif (UNIX)
 
 # Add box-2d
 if(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

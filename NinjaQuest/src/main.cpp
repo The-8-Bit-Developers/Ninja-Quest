@@ -7,13 +7,14 @@
 #include "Scene.h"
 #include "SplashScreen.h"
 #include "MainMenu.h"
+#include "TestGame.h"
 
 int main()
 {
 	Engine::Get().Create("Ninja Quest", 800, 600);
 
 	// Create array of scenes
-	constexpr int nScenes = 2;
+	constexpr int nScenes = 3;
 	Scene* scenes[nScenes];
 	for (int i = 0; i < nScenes; ++i) scenes[i] = nullptr;
 	unsigned int sceneID;
@@ -21,8 +22,9 @@ int main()
 	// Scene clean up
 	auto CleanScenes = [&]()
 	{
-		if (scenes[0] != nullptr) { delete (SplashScreen*)scenes[0]; scenes[0] = nullptr; }
-		if (scenes[1] != nullptr) { delete (MainMenu*)scenes[1]; scenes[1] = nullptr; }
+		if (scenes[0] != nullptr) { delete (SplashScreen*)scenes[0];scenes[0] = nullptr; }
+		if (scenes[1] != nullptr) { delete (MainMenu*)scenes[1]; 	scenes[1] = nullptr; }
+		if (scenes[2] != nullptr) { delete (TestGame*)scenes[2]; 	scenes[2] = nullptr; }
 	};
 
 	// Start splash screen scene
