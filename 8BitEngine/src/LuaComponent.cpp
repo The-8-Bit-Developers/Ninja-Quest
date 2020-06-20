@@ -220,7 +220,7 @@ int LuaComponent::lua_AddPhysics(lua_State* L)
 	else
 	{
 		if (lua_gettop(L) == 5) Sprite::s_Sprites.at(spriteID)->AddStaticPhysics(LuaComponent::s_CurrentInstance->m_Lua.GetFloat(4), LuaComponent::s_CurrentInstance->m_Lua.GetFloat(5));
-		Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
+		else Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
 	}
 
 	return 0;

@@ -67,6 +67,8 @@ void Sprite::SetTexture(sf::Texture* texture)
 {
 	m_Texture = texture;
 	m_Sprite.setTexture(*texture);
+	m_Width = texture->getSize().x;
+	m_Height = texture->getSize().y;
 }
 
 void Sprite::SetTexture(const std::string & fileName)

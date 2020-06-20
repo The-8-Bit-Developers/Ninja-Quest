@@ -62,7 +62,8 @@ int main()
 			CleanScenes();
 
 			sceneID = sceneStatus;
-			scenes[sceneStatus] = new MainMenu();
+			if (sceneStatus == Scene::MENU) scenes[sceneStatus] = new MainMenu();
+			if (sceneStatus == Scene::GAME_TEST) scenes[sceneStatus] = new TestGame();
 			scenes[sceneStatus]->OnStart();
 		}
 
