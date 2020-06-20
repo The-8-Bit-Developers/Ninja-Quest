@@ -14,7 +14,7 @@ public:
 	enum Scenes
 	{
 		SPLASH = 0,
-		MENU = 1
+		MENU = 1,
 	};
 
 };

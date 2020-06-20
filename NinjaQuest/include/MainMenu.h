@@ -8,6 +8,7 @@
 #include "Sound.h"
 
 constexpr int menuItems = 3;
+constexpr int aboutItems = 4;
 
 class MainMenu : public Scene
 {
@@ -25,6 +26,7 @@ private:
 	Sprite m_Player;
 
 	sf::Font m_Font;
+	sf::Font m_AboutFont;
 
 	sf::Text m_Title;
 
@@ -37,6 +39,15 @@ private:
 	int m_KeysPressed[2];
 
 	Sound m_Music;
+
+	enum Screen
+	{
+		MAIN = 0,
+		ABOUT = 1
+	};
+	Screen m_Screen;
+
+	sf::Text m_Abouts[aboutItems];
 
 };
 
