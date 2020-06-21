@@ -41,7 +41,7 @@ Sprite::Sprite() : m_Scale(1.0f, 1.0f), m_Width(0), m_Height(0), m_Layer(0)
 	m_ID = s_SpriteIDCount;
 	s_SpriteIDCount++; 
 	s_Sprites[m_ID] = this;
-	m_PhysicsBody = nullptr; 
+	m_PhysicsBody = nullptr;
 }
 
 void Sprite::AddStaticPhysics(float width, float height)
@@ -55,6 +55,7 @@ void Sprite::AddStaticPhysics(float width, float height)
 	// Create the body in the world
 	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
 	m_PhysicsBody->SetFixedRotation(true);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x, m_Position.y), 0.0f);
 
 	// Define shape, friction, density, etc
 	b2PolygonShape bodyBox;
@@ -88,6 +89,7 @@ void Sprite::AddDynamicPhysics(float density, float width, float height)
 	// Create the body in the world
 	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
 	m_PhysicsBody->SetFixedRotation(true);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x, m_Position.y), 0.0f);
 
 	// Define shape, friction, density, etc
 	b2PolygonShape bodyBox;

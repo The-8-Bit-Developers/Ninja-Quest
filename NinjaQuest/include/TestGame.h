@@ -15,9 +15,9 @@ public:
 	void OnEnd() override;
 
 private:
+    Sprite m_GroundSprites[10];
     Sprite m_Player;
     Sprite m_Enemies[5];
-    Sprite m_GroundSprites[10];
 };
 
 #endif

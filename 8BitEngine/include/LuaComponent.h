@@ -14,6 +14,7 @@ class LuaComponent : public Component
 	
 public:
 	LuaComponent(const std::string& fileName);
+	LuaComponent(const std::string& fileName, const std::string& variable, int number);
 	~LuaComponent() override {}
 	void OnUpdate() override;
 	
@@ -49,7 +50,6 @@ public:
 	static int lua_GetFriction(lua_State* L);
 	static int lua_RayCast(lua_State* L);
 
-private:
 	Lua m_Lua;
 	
 };
