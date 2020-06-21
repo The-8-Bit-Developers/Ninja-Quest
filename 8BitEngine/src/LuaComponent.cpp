@@ -42,6 +42,47 @@ LuaComponent::LuaComponent(const std::string& fileName) : m_Lua(Engine::Get().m_
 	m_Lua.CallGlobalFunction("OnCreate");
 }
 
+LuaComponent::LuaComponent(const std::string& fileName, const std::string& variable, int number) : m_Lua(Engine::Get().m_Logger, Engine::OnLuaPrint, Engine::OnLuaError)
+{
+	// Init Lua functions
+	m_Lua.SetGlobalFunction("CreateSprite",	lua_CreateSprite);
+	m_Lua.SetGlobalFunction("GetKeyDown",	lua_GetKeyDown);
+	m_Lua.SetGlobalFunction("AddX",			lua_AddX);
+	m_Lua.SetGlobalFunction("AddY",			lua_AddY);
+	m_Lua.SetGlobalFunction("GetX",			lua_GetX);
+	m_Lua.SetGlobalFunction("GetY",			lua_GetY);
+	m_Lua.SetGlobalFunction("SetX",			lua_SetX);
+	m_Lua.SetGlobalFunction("SetY",			lua_SetY);
+	m_Lua.SetGlobalFunction("SetGravity",	lua_SetGravity);
+	m_Lua.SetGlobalFunction("GetGravity",	lua_GetGravity);
+	m_Lua.SetGlobalFunction("AddPhysics",	lua_AddPhysics);
+	m_Lua.SetGlobalFunction("RemovePhysics",lua_RemovePhysics);
+	m_Lua.SetGlobalFunction("GetPhysics",	lua_GetPhysics);
+	m_Lua.SetGlobalFunction("AddForce",		lua_AddForce);
+	m_Lua.SetGlobalFunction("SetDensity",	lua_SetDensity);
+	m_Lua.SetGlobalFunction("GetDensity",	lua_GetDensity);
+	m_Lua.SetGlobalFunction("SetVelocityX", lua_SetVelocityX);
+	m_Lua.SetGlobalFunction("GetVelocityX", lua_GetVelocityX);
+	m_Lua.SetGlobalFunction("SetVelocityY", lua_SetVelocityY);
+	m_Lua.SetGlobalFunction("GetVelocityY", lua_GetVelocityY);
+	m_Lua.SetGlobalFunction("SetLayer",		lua_SetLayer);
+	m_Lua.SetGlobalFunction("GetLayer",		lua_GetLayer);
+	m_Lua.SetGlobalFunction("SetTexture",	lua_SetTexture);
+	m_Lua.SetGlobalFunction("GetTexture",	lua_GetTexture);
+	m_Lua.SetGlobalFunction("LoadTexture",	lua_LoadTexture);
+	m_Lua.SetGlobalFunction("GetFriction",	lua_GetFriction);
+	m_Lua.SetGlobalFunction("SetFriction",	lua_SetFriction);
+	m_Lua.SetGlobalFunction("RayCast",		lua_RayCast);
+
+	// Set variable
+	m_Lua.SetGlobalNumber(variable, number);
+
+	// Load script into state
+	m_Lua.ExecuteFile(fileName);
+	s_CurrentInstance = this;
+	m_Lua.CallGlobalFunction("OnCreate");
+}
+
 void LuaComponent::OnUpdate()
 {
 	s_CurrentInstance = this;
@@ -392,8 +433,6 @@ int LuaComponent::lua_SetTexture(lua_State* L)
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
 	std::string fileName = LuaComponent::s_CurrentInstance->m_Lua.GetString(2);
 	if (lua_gettop(L) == 2 && Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
-		if (Texture::s_Textures.find(fileName) != Texture::s_Textures.end())
-			if (Texture::s_Textures.at(fileName)->m_Texture != nullptr)
 				Sprite::s_Sprites.at(spriteID)->SetTexture(Texture::GetTexture(fileName)->m_Texture);
 
 	return 0;
