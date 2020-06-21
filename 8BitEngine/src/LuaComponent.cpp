@@ -75,7 +75,7 @@ LuaComponent::LuaComponent(const std::string& fileName, const std::string& varia
 	m_Lua.SetGlobalFunction("RayCast",		lua_RayCast);
 
 	// Set variable
-	m_Lua.SetGlobalNumber(variable, number);
+	m_Lua.SetGlobalNumber(variable, (float)number);
 
 	// Load script into state
 	m_Lua.ExecuteFile(fileName);
