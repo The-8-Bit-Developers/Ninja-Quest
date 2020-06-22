@@ -24,6 +24,7 @@ public:
 	int GetGlobalNumber(const std::string& variable = "-1");
 
 	void SetGlobalNumber(const std::string& variable, float number);
+	void SetGlobalBool(const std::string& variable, bool b);
 
 	int GetInt(int id);
 	float GetFloat(int id);
