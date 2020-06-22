@@ -12,7 +12,7 @@ end
 
 -- Main game loop - move player
 function OnUpdate(delta)
-
+	
 	-- Do stuff - look at 8BitEngine/include/LuaComponent.h to see all the functions you can do, and ask me :)
 	-- Eg SetX(sprite_id, X)
 	-- You can create sprites too!

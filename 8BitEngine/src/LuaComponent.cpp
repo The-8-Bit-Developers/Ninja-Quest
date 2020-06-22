@@ -160,7 +160,7 @@ int LuaComponent::lua_GetX(lua_State* L)
 	if (LuaComponent::s_CurrentInstance->m_Lua.GetString(1) == "camera")
 	{
 		LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Camera.position.x);
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -178,7 +178,7 @@ int LuaComponent::lua_GetY(lua_State* L)
 	if (LuaComponent::s_CurrentInstance->m_Lua.GetString(1) == "camera")
 	{
 		LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Camera.position.y);
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -197,7 +197,7 @@ int LuaComponent::lua_SetX(lua_State* L)
 	{
 		float pos = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(2);
 		Engine::Get().m_Camera.position.x = pos;
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -216,7 +216,7 @@ int LuaComponent::lua_SetY(lua_State* L)
 	{
 		float pos = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(2);
 		Engine::Get().m_Camera.position.y = pos;
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
