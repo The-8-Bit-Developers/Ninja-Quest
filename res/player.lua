@@ -25,6 +25,7 @@ function OnCreate()
 	SetLayer(player, 2) -- Put player on top of everything else
 	AddPhysics(player, true, 0.01, 32, 40) -- Add physics - dynamic, 0.01 density, X wide, X high
 	SetFriction(player, 1000) -- Set friction to a high amount to stop the player moving pretty much insantly
+	print(player)
 
 end
 
