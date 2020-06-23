@@ -6,6 +6,7 @@
 
 #include "Window.h"
 #include "Logger.h"
+#include "Vec2.h"
 
 /*
 	The debugger should not be included in Release mode, but
@@ -17,7 +18,7 @@ public:
 	Debugger(Logger& _logger);
 	~Debugger();
 
-	void Draw(Window& window, float fElapsedTime, float physicsTime, bool invert);
+	void Draw(Window& window, float fElapsedTime, float physicsTime, bool invert, Vec2 cameraPos);
 
 private:
 	sf::Font m_Font;
