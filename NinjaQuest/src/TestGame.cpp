@@ -43,7 +43,7 @@ void TestGame::OnStart()
     for (int i = 0; i < enemies; ++i) 
 	{
 		m_Enemies[i].AddComponent(new LuaComponent("enemy.lua", "enemy", m_Enemies[i].m_ID));
-		dynamic_cast<LuaComponent*>(m_Enemies[i].GetComponent(0))->m_Lua.SetGlobalNumber("player", m_Player.m_ID);
+		dynamic_cast<LuaComponent*>(m_Enemies[i].GetComponent(0))->m_Lua.SetGlobalNumber("player", (float) m_Player.m_ID);
 	}
 
 	// Let's draw the colliders when in debug mode

@@ -15,9 +15,9 @@ local enemy_offset_speed = 0.01
 function OnCreate()
 
 	SetTexture(enemy, "playerLeft.png")
-	SetLayer(enemy, 1) -- Put enemy on layer 1 - on top of ground but not player
-	AddPhysics(enemy, true, 0.01, 32, 40) -- Add physics - dynamic, 0.01 density, X wide, Y high
-	SetFriction(enemy, 1000) -- Set friction to a high amount to stop the enemy moving pretty much insantly
+	SetLayer(enemy, 1)
+	AddPhysics(enemy, false, 0.01, 32, 40)
+	SetFriction(enemy, 1000)
 
 	-- Whilst we could have only the required amount of ropes to
 	-- minimise memory usage, it would be more costly in terms
@@ -27,6 +27,8 @@ function OnCreate()
 	end
 	global_rope_offset_x = math.random() * 8
 	global_rope_offset_y = math.random() * -50
+
+	SetY(enemy, 150)
 
 end
 
@@ -56,12 +58,13 @@ function OnUpdate(delta)
 
 	playerX = GetX(player)
 	totalX = playerX - enemyX
-	
+
 	if(totalX < 0) then
 		AddForce(enemy, -10000, 0)
 	else
 		AddForce(enemy, 10000, 0)
 	end
 
-	SetY(enemy, enemy)
+	AddY(enemy, -0.01 * delta)
+
 end
