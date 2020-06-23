@@ -43,6 +43,12 @@ void Lua::SetGlobalNumber(const std::string& variable, float number)
 	lua_setglobal(L, variable.c_str());
 }
 
+void Lua::SetGlobalBool(const std::string& variable, bool b)
+{
+	lua_pushboolean(L, b);
+	lua_setglobal(L, variable.c_str());
+}
+
 int Lua::GetInt(int id)				{ if (lua_isnoneornil(L, id)) { logger.Err("Nill value!"); return -1; }			return (int)lua_tonumber(L, id); }
 float Lua::GetFloat(int id)			{ if (lua_isnoneornil(L, id)) { logger.Err("Nill value!"); return -1.0f; }		return (float)lua_tonumber(L, id); }
 std::string Lua::GetString(int id)	{ if (lua_isnoneornil(L, id)) { logger.Err("Nill value!"); return ""; }			return lua_tostring(L, id); }

@@ -18,6 +18,7 @@ LuaComponent::LuaComponent(const std::string& fileName) : m_Lua(Engine::Get().m_
 	m_Lua.SetGlobalFunction("SetGravity",	lua_SetGravity);
 	m_Lua.SetGlobalFunction("GetGravity",	lua_GetGravity);
 	m_Lua.SetGlobalFunction("AddPhysics",	lua_AddPhysics);
+	m_Lua.SetGlobalFunction("AddSpherePhysics",	lua_AddSpherePhysics);
 	m_Lua.SetGlobalFunction("RemovePhysics",lua_RemovePhysics);
 	m_Lua.SetGlobalFunction("GetPhysics",	lua_GetPhysics);
 	m_Lua.SetGlobalFunction("AddForce",		lua_AddForce);
@@ -56,6 +57,7 @@ LuaComponent::LuaComponent(const std::string& fileName, const std::string& varia
 	m_Lua.SetGlobalFunction("SetGravity",	lua_SetGravity);
 	m_Lua.SetGlobalFunction("GetGravity",	lua_GetGravity);
 	m_Lua.SetGlobalFunction("AddPhysics",	lua_AddPhysics);
+	m_Lua.SetGlobalFunction("AddSpherePhysics",	lua_AddSpherePhysics);
 	m_Lua.SetGlobalFunction("RemovePhysics",lua_RemovePhysics);
 	m_Lua.SetGlobalFunction("GetPhysics",	lua_GetPhysics);
 	m_Lua.SetGlobalFunction("AddForce",		lua_AddForce);
@@ -160,7 +162,7 @@ int LuaComponent::lua_GetX(lua_State* L)
 	if (LuaComponent::s_CurrentInstance->m_Lua.GetString(1) == "camera")
 	{
 		LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Camera.position.x);
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -178,7 +180,7 @@ int LuaComponent::lua_GetY(lua_State* L)
 	if (LuaComponent::s_CurrentInstance->m_Lua.GetString(1) == "camera")
 	{
 		LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Camera.position.y);
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -197,7 +199,7 @@ int LuaComponent::lua_SetX(lua_State* L)
 	{
 		float pos = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(2);
 		Engine::Get().m_Camera.position.x = pos;
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -216,7 +218,7 @@ int LuaComponent::lua_SetY(lua_State* L)
 	{
 		float pos = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(2);
 		Engine::Get().m_Camera.position.y = pos;
-		return 0;
+		return 1;
 	}
 
 	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
@@ -261,6 +263,32 @@ int LuaComponent::lua_AddPhysics(lua_State* L)
 	else
 	{
 		if (lua_gettop(L) == 5) Sprite::s_Sprites.at(spriteID)->AddStaticPhysics(LuaComponent::s_CurrentInstance->m_Lua.GetFloat(4), LuaComponent::s_CurrentInstance->m_Lua.GetFloat(5));
+		else Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
+	}
+
+	return 0;
+}
+
+int LuaComponent::lua_AddSpherePhysics(lua_State* L)
+{
+	if (lua_gettop(L) < 2) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	bool dynamic = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetBool(2);
+
+	if (lua_gettop(L) != 4 && lua_gettop(L) != 3 && dynamic) { Log("Invalid number of arguments in function SetPhysics"); return 0; }
+
+	if (Sprite::s_Sprites.find(spriteID) == Sprite::s_Sprites.end()) return 0;
+
+	if (dynamic)
+	{
+		float density = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(3);
+		if (lua_gettop(L) == 4) Sprite::s_Sprites.at(spriteID)->AddDynamicPhysicsSphere(density, LuaComponent::s_CurrentInstance->m_Lua.GetFloat(4));
+		else Sprite::s_Sprites.at(spriteID)->AddDynamicPhysics(density);
+	}
+	else
+	{
+		if (lua_gettop(L) == 4) Sprite::s_Sprites.at(spriteID)->AddStaticPhysicsSphere(LuaComponent::s_CurrentInstance->m_Lua.GetFloat(4));
 		else Sprite::s_Sprites.at(spriteID)->AddStaticPhysics();
 	}
 

@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "Config.h"
 
 Logger* Sprite::logger = nullptr;
 unsigned int Sprite::s_SpriteIDCount = 0;
@@ -50,18 +51,38 @@ void Sprite::AddStaticPhysics(float width, float height)
 
 	// Define a body with position, etc
 	b2BodyDef bodyDefinition;
-	bodyDefinition.position.Set(m_Position.x, m_Position.y);
+	bodyDefinition.position.Set(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE);
 	
 	// Create the body in the world
 	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
 	m_PhysicsBody->SetFixedRotation(true);
-	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x, m_Position.y), 0.0f);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE), 0.0f);
 
 	// Define shape, friction, density, etc
-	b2PolygonShape bodyBox;
-	bodyBox.SetAsBox(0.5f * (float)width * m_Scale.x, 0.5f * (float)height * m_Scale.y);
+	b2PolygonShape shape;
+	shape.SetAsBox(width * 0.5f * PHYSICS_SCALE, height * 0.5f * PHYSICS_SCALE);
+	m_PhysicsBody->CreateFixture(&shape, 0.0f);
 
-	m_PhysicsBody->CreateFixture(&bodyBox, 0.0f);
+}
+
+void Sprite::AddStaticPhysicsSphere(float radius)
+{
+	if (m_PhysicsBody != nullptr) RemovePhysics();
+
+	// Define a body with position, etc
+	b2BodyDef bodyDefinition;
+	bodyDefinition.position.Set(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE);
+	
+	// Create the body in the world
+	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
+	m_PhysicsBody->SetFixedRotation(true);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE), 0.0f);
+
+	// Define shape, friction, density, etc
+	b2CircleShape body;
+	body.m_radius = radius * PHYSICS_SCALE;
+
+	m_PhysicsBody->CreateFixture(&body, 0.0f);
 }
 
 void Sprite::SetTexture(sf::Texture* texture)
@@ -84,20 +105,47 @@ void Sprite::AddDynamicPhysics(float density, float width, float height)
 	// Define a body with position, etc
 	b2BodyDef bodyDefinition;
 	bodyDefinition.type = b2_dynamicBody;
-	bodyDefinition.position.Set(m_Position.x, m_Position.y);
+	bodyDefinition.position.Set(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE);
 
 	// Create the body in the world
 	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
 	m_PhysicsBody->SetFixedRotation(true);
-	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x, m_Position.y), 0.0f);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE), 0.0f);
 
 	// Define shape, friction, density, etc
 	b2PolygonShape bodyBox;
-	bodyBox.SetAsBox(0.5f * (float)width, 0.5f * (float)height);
+	bodyBox.SetAsBox(0.5f * (float)width * PHYSICS_SCALE, 0.5f * (float)height * PHYSICS_SCALE);
 
 	// Create fixture
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &bodyBox;
+	fixtureDef.density = density;
+	fixtureDef.friction = 100.0f;
+	m_PhysicsBody->CreateFixture(&fixtureDef);
+
+}
+
+void Sprite::AddDynamicPhysicsSphere(float density, float radius)
+{
+	if (m_PhysicsBody != nullptr) RemovePhysics();
+
+	// Define a body with position, etc
+	b2BodyDef bodyDefinition;
+	bodyDefinition.type = b2_dynamicBody;
+	bodyDefinition.position.Set(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE);
+
+	// Create the body in the world
+	m_PhysicsBody = s_PhysicsWorld.CreateBody(&bodyDefinition);
+	m_PhysicsBody->SetFixedRotation(true);
+	m_PhysicsBody->SetTransform(b2Vec2(m_Position.x * PHYSICS_SCALE, m_Position.y * PHYSICS_SCALE), 0.0f);
+
+	// Define shape, friction, density, etc
+	b2CircleShape bodyCircle;
+	bodyCircle.m_radius = radius * PHYSICS_SCALE;
+
+	// Create fixture
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &bodyCircle;
 	fixtureDef.density = density;
 	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);

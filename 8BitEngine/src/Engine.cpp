@@ -95,7 +95,6 @@ void Engine::BeginFrame()
 	m_Window.Clear(sf::Color((uint8_t)m_BackgroundR, (uint8_t)m_BackgroundG, (uint8_t)m_BackgroundB));
 }
 
-#include <thread>
 void Engine::EndFrame()
 {
 	// Do camera
@@ -108,17 +107,17 @@ void Engine::EndFrame()
 	constexpr float physicsSpeed = 1.0f / 60.0f;
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
+		if (sprite->m_PhysicsBody != nullptr) sprite->m_PhysicsBody->SetAwake(true); // Set everything to awake to fix getting stuck!
 		if (sprite->m_PhysicsBody != nullptr && (sprite->lastPhysicsPosition.x != sprite->m_Position.x || sprite->lastPhysicsPosition.y != sprite->m_Position.y))
 		{
-			sprite->m_PhysicsBody->SetTransform(b2Vec2(sprite->m_Position.x, sprite->m_Position.y), sprite->m_PhysicsBody->GetAngle());
-			sprite->m_PhysicsBody->SetAwake(true);
+			sprite->m_PhysicsBody->SetTransform(b2Vec2(sprite->m_Position.x * PHYSICS_SCALE, sprite->m_Position.y * PHYSICS_SCALE), sprite->m_PhysicsBody->GetAngle());
 		}
 		sprite->lastPhysicsPosition = sprite->m_Position;
 	}
 	Sprite::s_PhysicsWorld.Step(physicsSpeed, 6, 2);
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
-		if (sprite->m_PhysicsBody != nullptr) sprite->m_Position = { sprite->m_PhysicsBody->GetPosition().x, sprite->m_PhysicsBody->GetPosition().y };
+		if (sprite->m_PhysicsBody != nullptr) sprite->m_Position = { sprite->m_PhysicsBody->GetPosition().x * PHYSICS_SCALE_INV, sprite->m_PhysicsBody->GetPosition().y * PHYSICS_SCALE_INV };
 	}
 
 #ifdef DEBUG
@@ -148,13 +147,16 @@ void Engine::EndFrame()
 	// If in debug mode, display FPS and draw bounding boxes
 #ifdef DEBUG
 	m_Window.SetCamera(m_DebugCamera);
-	m_Debugger.Draw(m_Window, m_Timer.m_fDelta, fPhysicsTime, m_BackgroundR == 255);
+	m_Debugger.Draw(m_Window, m_Timer.m_fDelta, fPhysicsTime, m_BackgroundR == 255, m_Camera.position);
 	m_Window.SetCamera(m_Camera);
 	
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
 		if (sprite->m_bDrawCollider)
-			Engine::Get().m_Window.DrawBoundingBox(sprite->m_Position * Vec2(1.0f, -1.0), Vec2((float)sprite->m_Width, (float)sprite->m_Height));
+		{
+			if (sprite->m_PhysicsBody != nullptr && sprite->m_PhysicsBody->GetFixtureList()->GetType() == b2Shape::e_circle) {}
+			else Engine::Get().m_Window.DrawBoundingBox(sprite->m_Position * Vec2(1.0f, -1.0), Vec2((float)sprite->m_Width, (float)sprite->m_Height));;
+		}
 	}
 #endif
 

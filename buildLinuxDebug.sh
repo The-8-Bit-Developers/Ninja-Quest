@@ -4,7 +4,7 @@ mkdir build
 #cp lua/liblua53.dylib build/NinjaQuest/
 # Build the project
 cd build
-cmake ..  -DCMAKE_BUILD_TYPE=Release
-cmake --build . --target NinjaQuest --config Release
-cd ..
-./build/NinjaQuest/NinjaQuest
+cmake ..  -DCMAKE_BUILD_TYPE=Debug
+cmake --build . --target NinjaQuest --config Debug
+cd NinjaQuest
+./NinjaQuest

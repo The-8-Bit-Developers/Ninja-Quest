@@ -14,6 +14,7 @@ end
 
 -- Main game loop - move player
 function OnUpdate(delta)
+
 	playerX = GetX(player)
 	enemyX = GetX(my_id)
 	totalX = playerX - enemyX

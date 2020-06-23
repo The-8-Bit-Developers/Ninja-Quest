@@ -80,8 +80,12 @@ public:
 
 	void AddStaticPhysics(float width, float height);
 	inline void AddStaticPhysics() { AddStaticPhysics((float)m_Width, (float)m_Height); }
+	void AddStaticPhysicsSphere(float radius);
+	inline void AddStaticPhysicsSphere() { AddStaticPhysicsSphere((float)m_Width/2.0f); }
 	void AddDynamicPhysics(float density, float width, float height);
 	inline void AddDynamicPhysics(float density) { AddDynamicPhysics(density, (float)m_Width, (float)m_Height); }
+	void AddDynamicPhysicsSphere(float density, float radius);
+	inline void AddDynamicPhysicsSphere(float density) { AddDynamicPhysicsSphere(density, (float)m_Width/2.0f); }
 	void RemovePhysics();
 	b2Body* m_PhysicsBody = nullptr;
 	Vec2 lastPhysicsPosition;

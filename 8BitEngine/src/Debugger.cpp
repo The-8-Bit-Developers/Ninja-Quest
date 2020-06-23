@@ -9,7 +9,7 @@ Debugger::Debugger(Logger& _logger)
 	logger = &_logger;
 }
 
-void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool invert)
+void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool invert, Vec2 cameraPos)
 {
 	const_cast<sf::Texture&>(m_Font.getTexture(30)).setSmooth(false);
 	const_cast<sf::Texture&>(m_Font.getTexture(20)).setSmooth(false);
@@ -33,6 +33,11 @@ void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool 
 	// Draw physics time
 	text.setPosition(sf::Vector2f(x, y + 30));
 	text.setString("Physics took " + std::to_string(int(physicsTime)) + " ms");
+	window.Draw(text);
+
+	// Draw camera position
+	text.setPosition(sf::Vector2f(x, y + 60));
+	text.setString("Camera position: " + std::to_string(cameraPos.x) + ", " + std::to_string(cameraPos.y));
 	window.Draw(text);
 
 	text.setCharacterSize(20);

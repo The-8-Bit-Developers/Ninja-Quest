@@ -15,6 +15,7 @@ key_right = 72
 key_space = 57
 
 local speed = 100.0
+local hack_speed = speed * 0.001
 local jump_force = 2
 local camera_speed = 0.2
 
@@ -23,7 +24,8 @@ function OnCreate()
 
 	SetTexture(player, "player.png")
 	SetLayer(player, 2) -- Put player on top of everything else
-	AddPhysics(player, true, 0.01, 32, 40) -- Add physics - dynamic, 0.01 density, X wide, X high
+	--AddSpherePhysics(player, true, 0.01, 20) -- Add physics but with a sphere collider - dynamic, 0.01 density, X radius
+	AddPhysics(player, true, 0.01, 32, 40)
 	SetFriction(player, 1000) -- Set friction to a high amount to stop the player moving pretty much insantly
 	print(player)
 
@@ -40,8 +42,17 @@ function OnUpdate(delta)
 	if (GetKeyDown(key_w) and GetKeyDown(key_a) == false and GetKeyDown(key_d) == false and grounded) then 
 		SetVelocityY(player, jump_force * speed * delta) 
 	end
-	if (GetKeyDown(key_a) and GetKeyDown(key_w) == false) then SetVelocityX(player, -speed * delta) end
-	if (GetKeyDown(key_d) and GetKeyDown(key_w) == false) then SetVelocityX(player,  speed * delta) end
+	
+	-- Hack of the cenutry - collision left and right is broken, so do
+	-- raycasting instead and hope for the best!
+	leftCollision = RayCast(GetX(player), GetY(player), -16.0, 0)
+	rightCollision = RayCast(GetX(player), GetY(player), 16.0, 0)
+	if (GetKeyDown(key_a) and GetKeyDown(key_w) == false and leftCollision == false) then SetX(player, GetX(player) - hack_speed * delta) end
+	if (GetKeyDown(key_d) and GetKeyDown(key_w) == false and rightCollision == false) then SetX(player, GetX(player) + hack_speed * delta) end
+
+	-- The problem is that this hack adversely affects velocity, so
+	-- let's fix that in the worst possible way!
+	-- (and in C++ too to confuse everyone!)
 
 	-- Move player if two keys are pressed
 	if (GetKeyDown(key_w) and GetKeyDown(key_a) and grounded) then

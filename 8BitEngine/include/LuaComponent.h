@@ -32,6 +32,7 @@ public:
 	static int lua_SetGravity(lua_State* L);
 	static int lua_GetGravity(lua_State* L);
 	static int lua_AddPhysics(lua_State* L);
+	static int lua_AddSpherePhysics(lua_State* L);
 	static int lua_RemovePhysics(lua_State* L);
 	static int lua_GetPhysics(lua_State* L);
 	static int lua_AddForce(lua_State* L);
