@@ -18,6 +18,8 @@ public:
 	~LuaComponent() override {}
 	void OnUpdate() override;
 	
+	void RegisterFunctions();
+
 	static LuaComponent* s_CurrentInstance;
 
 	// Lua functions
@@ -50,6 +52,7 @@ public:
 	static int lua_SetFriction(lua_State* L);
 	static int lua_GetFriction(lua_State* L);
 	static int lua_RayCast(lua_State* L);
+	static int lua_Delete(lua_State* L);
 
 	Lua m_Lua;
 	
