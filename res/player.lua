@@ -27,6 +27,7 @@ function OnCreate()
 	--AddSpherePhysics(player, true, 0.01, 20) -- Add physics but with a sphere collider - dynamic, 0.01 density, X radius
 	AddPhysics(player, true, 0.01, 32, 40)
 	SetFriction(player, 1000) -- Set friction to a high amount to stop the player moving pretty much insantly
+	print(player)
 
 end
 
