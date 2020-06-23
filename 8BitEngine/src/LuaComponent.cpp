@@ -208,8 +208,14 @@ int LuaComponent::lua_SetY(lua_State* L)
 
 int LuaComponent::lua_SetGravity(lua_State* L)
 {
-	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function SetGravity"); return 0; }
-	Engine::Get().SetGravity(LuaComponent::s_CurrentInstance->m_Lua.GetFloat(1));
+	if (lua_gettop(L) != 1 && lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetGravity"); return 0; }
+	if (lua_gettop(L) == 1) Engine::Get().SetGravity(LuaComponent::s_CurrentInstance->m_Lua.GetFloat(1));
+	else
+	{
+		float g = LuaComponent::s_CurrentInstance->m_Lua.GetFloat(2);
+		unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+		if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr) Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetGravityScale(g);
+	}
 	return 0;
 }
 

@@ -15,9 +15,12 @@ local enemy_offset_speed = 0.01
 function OnCreate()
 
 	SetTexture(enemy, "playerLeft.png")
+	AddPhysics(enemy, true, 0.01, 32, 40)
 	SetLayer(enemy, 1)
-	AddPhysics(enemy, false, 0.01, 32, 40)
 	SetFriction(enemy, 1000)
+
+	-- Disable gravity
+	SetGravity(enemy, 0.0)
 
 	-- Whilst we could have only the required amount of ropes to
 	-- minimise memory usage, it would be more costly in terms
