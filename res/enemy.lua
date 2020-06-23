@@ -1,4 +1,4 @@
--- The enemy variable is set in C++
+-- The enemy variable is set in C++, as is the player variable
 
 -- Load sprites in OnCreate
 function OnCreate()
@@ -12,7 +12,19 @@ end
 
 -- Main game loop - move player
 function OnUpdate(delta)
+
+	playerX = GetX(player)
+	enemyX = GetX(enemy)
+	totalX = playerX - enemyX
 	
+	if(totalX < 0) then
+		AddForce(enemy, -10000, 0)
+	else
+		AddForce(enemy, 10000, 0)
+	end
+
+	SetY(enemy, enemy)
+
 	-- Do stuff - look at 8BitEngine/include/LuaComponent.h to see all the functions you can do, and ask me :)
 	-- Eg SetX(sprite_id, X)
 	-- You can create sprites too!
