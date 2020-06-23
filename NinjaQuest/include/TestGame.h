@@ -5,6 +5,7 @@
 #include <Sprite.h>
 
 #include "Scene.h"
+#include "Lua.h"
 
 constexpr int width = 10;
 constexpr int height = 4;
@@ -21,6 +22,7 @@ public:
 private:
     Sprite m_GroundSprites[width*height];
     Sprite m_Player;
+
     Sprite m_Enemies[enemies];
 };
 

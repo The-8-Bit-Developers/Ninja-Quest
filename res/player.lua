@@ -39,7 +39,7 @@ function OnUpdate(delta)
 	grounded = RayCast(GetX(player), GetY(player), 0, -20.1)
 
 	-- Move player if only one key is pressed
-	if (GetKeyDown(key_w) and GetKeyDown(key_a) == false and GetKeyDown(key_d) == false and grounded) then 
+	if (GetKeyDown(key_w) and grounded) then 
 		SetVelocityY(player, jump_force * speed * delta) 
 	end
 	
@@ -47,30 +47,13 @@ function OnUpdate(delta)
 	-- raycasting instead and hope for the best!
 	leftCollision = RayCast(GetX(player), GetY(player), -16.0, 0)
 	rightCollision = RayCast(GetX(player), GetY(player), 16.0, 0)
-	if (GetKeyDown(key_a) and GetKeyDown(key_w) == false and leftCollision == false) then SetX(player, GetX(player) - hack_speed * delta) end
-	if (GetKeyDown(key_d) and GetKeyDown(key_w) == false and rightCollision == false) then SetX(player, GetX(player) + hack_speed * delta) end
+	if (GetKeyDown(key_a) and leftCollision == false) then SetX(player, GetX(player) - hack_speed * delta) end
+	if (GetKeyDown(key_d) and rightCollision == false) then SetX(player, GetX(player) + hack_speed * delta) end
 
 	-- The problem is that this hack adversely affects velocity, so
 	-- let's fix that in the worst possible way!
 	-- (and in C++ too to confuse everyone!)
 
-	-- Move player if two keys are pressed
-	if (GetKeyDown(key_w) and GetKeyDown(key_a) and grounded) then
-		SetVelocityX(player, -speed * delta * 2.5)
-		SetVelocityY(player, jump_force * speed * delta)
-	end
-	if (GetKeyDown(key_w) and GetKeyDown(key_d) and grounded) then
-		SetVelocityX(player, speed * delta * 2.5)
-		SetVelocityY(player, jump_force * speed * delta)
-	end
-
-	-- The physics is weird so if we are in the air we must manually do graity
-	-- if moving left or right
-	if ((GetKeyDown(key_a) or GetKeyDown(key_d)) and grounded == false and GetVelocityY(player) < 1.0) then 
-		if (GetKeyDown(key_a)) then SetVelocityX(player, -speed * delta * 0.25) end
-		if (GetKeyDown(key_d)) then SetVelocityX(player,  speed * delta * 0.25) end
-		SetVelocityY(player, GetGravity() * -1) 
-	end
 
 	-- Change player texture based on movement
 	if (GetVelocityX(player) <  0) then SetTexture(player, "playerLeft.png") end
