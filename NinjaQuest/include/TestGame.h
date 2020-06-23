@@ -8,6 +8,7 @@
 
 constexpr int width = 10;
 constexpr int height = 4;
+constexpr int enemies = 4;
 
 class TestGame : public Scene
 {
@@ -20,7 +21,7 @@ public:
 private:
     Sprite m_GroundSprites[width*height];
     Sprite m_Player;
-    Sprite m_Enemies[5];
+    Sprite m_Enemies[enemies];
 };
 
 #endif

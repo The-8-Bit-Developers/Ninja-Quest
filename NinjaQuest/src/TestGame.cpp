@@ -4,43 +4,48 @@
 #include "Engine.h"
 #include "LuaComponent.h"
 
-constexpr const char* level = "\
-1000000001\
-1000110001\
-1001111001\
-1111111111\
-";
+constexpr const char* level = // 0 - empty, 1 - ground, 2 - enemy
+"0000000000"
+"0000110000"
+"0221111220"
+"1111111111";
 
 void TestGame::OnStart()
 {
     Engine::Get().SetGravity(200.0f);
 
-    // Generate ground from level string
-    float groundX = -100.0f;
-	float groundY = -20.0f;
+    // Generate ground and enemies from level string
+    float groundX = 0.0f;
+	float groundY = 0.0f;
+	int enemyCount = 0;
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			if (level[y*height+x] == '0') continue;
-			m_GroundSprites[y*height+x].SetTexture("ground.png");
-			m_GroundSprites[y*height+x].m_Position = { groundX + 32.0f * x, groundY - 32.0f * y};
-			m_GroundSprites[y*height+x].AddStaticPhysics();
+			if (level[y*width+x] == '0') continue;
+			if (level[y*width+x] == '2')
+			{
+				m_Enemies[enemyCount].m_Position = { groundX + 32.0f * x, groundY - 32.0f * y};
+				enemyCount++;
+				continue;
+			}
+			m_GroundSprites[y*width+x].SetTexture("ground.png");
+			m_GroundSprites[y*width+x].m_Position = { groundX + 32.0f * x, groundY - 32.0f * y};
+			m_GroundSprites[y*width+x].AddStaticPhysics();
 		}
 	}
 
-	// Position enemies and player
-	m_Player.m_Position.x = -100.0f;
-	for (int i = 0; i < 5; ++i) m_Enemies[i].m_Position.x = -50.0f + i*64.0f;
+	// Position player
+	m_Player.m_Position = {140.0f, 4.0f};
 
     // Add script to player and enemies
 	m_Player.AddComponent(new LuaComponent("player.lua", "player", m_Player.m_ID)); // The 2nd and 3rd arumgnets give the script the ID of the player
-    for (int i = 0; i < 5; ++i) m_Enemies[i].AddComponent(new LuaComponent("enemy.lua", "enemy", m_Enemies[i].m_ID));
+    for (int i = 0; i < enemies; ++i) m_Enemies[i].AddComponent(new LuaComponent("enemy.lua", "enemy", m_Enemies[i].m_ID));
 
 	// Let's draw the colliders when in debug mode
 #ifdef DEBUG
 	m_Player.m_bDrawCollider = true;
-	for (int i = 0; i < 5; ++i) m_Enemies[i].m_bDrawCollider = true;
+	for (int i = 0; i < enemies; ++i) m_Enemies[i].m_bDrawCollider = true;
 	for (int x = 0; x < width*height; ++x) m_GroundSprites[x].m_bDrawCollider = true;
 #endif
 
@@ -55,6 +60,9 @@ void TestGame::OnStart()
 
 int TestGame::OnUpdate()
 {
+	// Part of player.lua's biggest hack ever
+	m_Player.m_PhysicsBody->SetLinearVelocity(b2Vec2(0, m_Player.m_PhysicsBody->GetLinearVelocity().y));
+
 	return -1;
 }
 
