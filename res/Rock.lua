@@ -1,12 +1,12 @@
 local delete_delay = 1000
 local delete_time = 0
 
-local shuriken_gravity = 0.5
---number press number for Shuriken is 1
+local rock_gravity = 0.5
+
 function OnCreate()
 
 	-- Create shuriken where camera is
-	SetTexture(sprite, "shuriken.png")
+	SetTexture(sprite, "Rock.png")
 	SetLayer(sprite, 3)
 	SetX(sprite, GetX("camera"))
 	SetY(sprite, GetY("camera"))
@@ -14,7 +14,7 @@ function OnCreate()
 	SetTrigger(sprite)
 	--SetFriction(sprite, 1000)
 
-	SetGravity(sprite, shuriken_gravity)
+	SetGravity(sprite, rock_gravity)
 
 	-- Work out velocity, asuming the camera's
 	-- position is the centre of the world

@@ -22,6 +22,7 @@ local camera_speed = 0.2
 local shuriken_time = 0
 local shuriken_delay = 250
 
+local number_press = 0
 -- Load sprites in OnCreate
 function OnCreate()
 
@@ -36,6 +37,7 @@ end
 -- Main game loop - move player
 function OnUpdate(delta)
 
+	
 	-- Get if player is grounded by casting a ray from his position
 	-- 20.1 units down (don't ask me why, that number's magic!)
 	grounded = RayCast(GetX(player), GetY(player), 0, -20.1)
@@ -62,12 +64,27 @@ function OnUpdate(delta)
 	if (GetVelocityX(player) >= 0) then SetTexture(player, "player.png") end
 
 	-- Spawn shurikens, but only if we have reached the delay
-	if (GetMouseDown(0) and shuriken_time > shuriken_delay) then
+	if (GetMouseDown(0) and shuriken_time > shuriken_delay and number_press = 1) then
 		shuriken_time = 0
 		shuriken = CreateSprite()
 		AddScript(shuriken, "shuriken.lua")
 	end
 
 	shuriken_time = shuriken_time + delta;
+	--spawns rocks if number press is 0
+	if (GetMouseDown(0) and shuriken_time > shuriken_delay and number_press = 0) then
+		shuriken_time = 0
+		Rock = CreateSprite()
+		AddScript(Rock, "Rock.lua")
+	end
+	--spawns Paper Sword if number press is 2
+	if (GetMouseDown(0) and shuriken_time > shuriken_delay and number_press = 2) then
+		shuriken_time = 0
+		PaperSword = CreateSprite()
+		AddScript(PaperSword, "PaperSword.lua")
+	end
+
+
+
 
 end
