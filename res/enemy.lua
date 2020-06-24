@@ -16,7 +16,7 @@ function OnCreate()
 
 	SetTexture(enemy, "playerLeft.png")
 	AddPhysics(enemy, true, 0.01, 32, 40)
-	SetTrigger(enemy)
+	--SetTrigger(enemy)
 	SetLayer(enemy, 1)
 	SetFriction(enemy, 1000)
 
@@ -70,7 +70,10 @@ function OnUpdate(delta)
 
 	AddY(enemy, -0.01 * delta)
 
+	-- Stop the player moving an enemy
+	SetVelocityY(enemy, 0)
+
 	-- Die if we've gotten hit and are above the ground
-	if ()
+	-- do stuff and cause game over
 
 end

@@ -1,6 +1,8 @@
 local delete_delay = 1000
 local delete_time = 0
 
+local shuriken_gravity = 0.5
+
 function OnCreate()
 
 	-- Create shuriken where camera is
@@ -11,6 +13,8 @@ function OnCreate()
 	AddSpherePhysics(sprite, true, 0.01)
 	SetTrigger(sprite)
 	--SetFriction(sprite, 1000)
+
+	SetGravity(sprite, shuriken_gravity)
 
 	-- Work out velocity, asuming the camera's
 	-- position is the centre of the world

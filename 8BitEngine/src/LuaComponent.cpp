@@ -605,7 +605,6 @@ int LuaComponent::lua_IsTriggered(lua_State* L)
 		b2ContactEdge* c = Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetContactList();
 		if (c != nullptr && c->contact->IsTouching())
 		{
-			c->contact->GetFixtureA()->GetUserData()->
 			bCollided = true;
 		}
 	}
