@@ -46,6 +46,7 @@ public:
 	void EndFrame();
 
 	inline bool GetKeyDown(sf::Keyboard::Key key) { return m_Window.IsFocused() && m_Window.GetKeyDown(key); }
+	inline bool GetMouseDown(sf::Mouse::Button b) { return m_Window.IsFocused() && m_Window.GetMouseDown(b); }
 
 	Window m_Window;
 	Timer m_Timer;

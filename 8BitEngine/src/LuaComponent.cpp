@@ -60,6 +60,12 @@ void LuaComponent::RegisterFunctions()
 	m_Lua.SetGlobalFunction("SetFriction",	lua_SetFriction);
 	m_Lua.SetGlobalFunction("RayCast",		lua_RayCast);
 	m_Lua.SetGlobalFunction("Delete",		lua_Delete);
+	m_Lua.SetGlobalFunction("AddScript",	lua_AddScript);
+	m_Lua.SetGlobalFunction("GetMouseDown", lua_GetMouseDown);
+	m_Lua.SetGlobalFunction("GetMouseX",	lua_GetMouseX);
+	m_Lua.SetGlobalFunction("GetMouseY",	lua_GetMouseY);
+	m_Lua.SetGlobalFunction("SetTrigger",	lua_SetTrigger);
+	m_Lua.SetGlobalFunction("IsTriggered",	lua_IsTriggered);
 }
 
 void LuaComponent::OnUpdate()
@@ -70,7 +76,14 @@ void LuaComponent::OnUpdate()
 
 int LuaComponent::lua_CreateSprite(lua_State* L)
 {
-	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function CreateSprite"); return 0; }
+	if (lua_gettop(L) != 1 && lua_gettop(L) != 0) { Log("Invalid number of arguments in function CreateSprite"); return 0; }
+
+	if (lua_gettop(L) == 0)
+	{
+		Engine::Get().m_luaSprites.emplace_back(new Sprite());
+		LuaComponent::s_CurrentInstance->m_Lua.PushNumber((int)Engine::Get().m_luaSprites.back()->m_ID);
+		return 1;
+	}
 
 	// Retrieve arguments
 	const std::string fileName = LuaComponent::s_CurrentInstance->m_Lua.GetString(1);
@@ -525,4 +538,76 @@ int LuaComponent::lua_Delete(lua_State* L)
 	}
 
 	return 0;
+}
+
+int LuaComponent::lua_AddScript(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function AddScript"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	std::string script = LuaComponent::s_CurrentInstance->m_Lua.GetString(2);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
+	{
+		LuaComponent* c = new LuaComponent(script, "sprite", spriteID);
+		Sprite::s_Sprites.at(spriteID)->AddComponent(c);
+	}
+
+	return 0;
+}
+
+int LuaComponent::lua_GetMouseDown(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetMouseDown"); return 0; }
+
+	int button = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	LuaComponent::s_CurrentInstance->m_Lua.PushBool(Engine::Get().GetMouseDown((sf::Mouse::Button)button));
+	return 1;
+}
+
+int LuaComponent::lua_GetMouseX(lua_State* L)
+{
+	if (lua_gettop(L) != 0) { Log("Invalid number of arguments in function GetMouseX"); return 0; }
+
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Window.GetMousePosition().x);
+	return 1;
+}
+
+int LuaComponent::lua_GetMouseY(lua_State* L)
+{
+	if (lua_gettop(L) != 0) { Log("Invalid number of arguments in function GetMouseY"); return 0; }
+
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(Engine::Get().m_Window.GetMousePosition().y);
+	return 1;
+}
+
+int LuaComponent::lua_SetTrigger(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function SetTrigger"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
+	{
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetFixtureList()->SetSensor(true);
+	}
+
+	return 0;
+}
+
+int LuaComponent::lua_IsTriggered(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function IsTriggered"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	bool bCollided = false;
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		b2ContactEdge* c = Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetContactList();
+		if (c != nullptr && c->contact->IsTouching())
+		{
+			bCollided = true;
+		}
+	}
+	LuaComponent::s_CurrentInstance->m_Lua.PushBool(bCollided);
+
+	return 1;
 }

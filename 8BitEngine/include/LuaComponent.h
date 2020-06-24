@@ -53,6 +53,12 @@ public:
 	static int lua_GetFriction(lua_State* L);
 	static int lua_RayCast(lua_State* L);
 	static int lua_Delete(lua_State* L);
+	static int lua_AddScript(lua_State* L);
+	static int lua_GetMouseDown(lua_State* L);
+	static int lua_GetMouseX(lua_State* L);
+	static int lua_GetMouseY(lua_State* L);
+	static int lua_SetTrigger(lua_State* L);
+	static int lua_IsTriggered(lua_State* L);
 
 	Lua m_Lua;
 	

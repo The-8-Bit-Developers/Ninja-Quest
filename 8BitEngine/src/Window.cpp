@@ -18,7 +18,20 @@ int Window::GetWidth() { return m_Window.getSize().x; }
 int Window::GetHeight() { return m_Window.getSize().y; }
 
 bool Window::GetKeyDown(sf::Keyboard::Key key) { return sf::Keyboard::isKeyPressed(key); }
+bool Window::GetMouseDown(sf::Mouse::Button button) { return sf::Mouse::isButtonPressed(button); }
 bool Window::GetEvent(sf::Event& event) { return m_Window.pollEvent(event); }
+
+Vec2 Window::GetMousePosition() 
+{ 
+	float x = (float)sf::Mouse::getPosition(m_Window).x;
+	float y = (float)sf::Mouse::getPosition(m_Window).y;
+
+	// Translate to world space
+	x = (float)m_Window.mapPixelToCoords(sf::Vector2i((int)x, (int)y)).x;
+	y = -(float)m_Window.mapPixelToCoords(sf::Vector2i((int)x, (int)y)).y;
+
+	return { x, y };
+}
 
 void Window::Clear(sf::Color colour) { m_Window.clear(colour); }
 

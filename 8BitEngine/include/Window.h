@@ -27,6 +27,8 @@ public:
 	int GetHeight();
 	
 	bool GetKeyDown(sf::Keyboard::Key key);
+	bool GetMouseDown(sf::Mouse::Button key);
+	Vec2 GetMousePosition();
 	bool GetEvent(sf::Event& event);
 
 	void Clear(sf::Color colour);

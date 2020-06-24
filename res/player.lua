@@ -19,6 +19,9 @@ local hack_speed = speed * 0.001
 local jump_force = 2
 local camera_speed = 0.2
 
+local shuriken_time = 0
+local shuriken_delay = 250
+
 -- Load sprites in OnCreate
 function OnCreate()
 
@@ -27,7 +30,6 @@ function OnCreate()
 	--AddSpherePhysics(player, true, 0.01, 20) -- Add physics but with a sphere collider - dynamic, 0.01 density, X radius
 	AddPhysics(player, true, 0.01, 32, 40)
 	SetFriction(player, 1000) -- Set friction to a high amount to stop the player moving pretty much insantly
-	print(player)
 
 end
 
@@ -58,5 +60,14 @@ function OnUpdate(delta)
 	-- Change player texture based on movement
 	if (GetVelocityX(player) <  0) then SetTexture(player, "playerLeft.png") end
 	if (GetVelocityX(player) >= 0) then SetTexture(player, "player.png") end
+
+	-- Spawn shurikens, but only if we have reached the delay
+	if (GetMouseDown(0) and shuriken_time > shuriken_delay) then
+		shuriken_time = 0
+		shuriken = CreateSprite()
+		AddScript(shuriken, "shuriken.lua")
+	end
+
+	shuriken_time = shuriken_time + delta;
 
 end
