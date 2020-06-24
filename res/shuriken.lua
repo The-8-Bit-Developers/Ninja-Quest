@@ -8,9 +8,9 @@ function OnCreate()
 	SetLayer(sprite, 3)
 	SetX(sprite, GetX("camera"))
 	SetY(sprite, GetY("camera"))
-	AddPhysics(sprite, true, 0.01)
+	AddSpherePhysics(sprite, true, 0.01)
 	SetTrigger(sprite)
-	SetFriction(sprite, 1000)
+	--SetFriction(sprite, 1000)
 
 	-- Work out velocity, asuming the camera's
 	-- position is the centre of the world
@@ -26,11 +26,13 @@ end
 
 -- Main game loop - move player
 function OnUpdate(delta)
-	
+
 	delete_time = delete_time + delta
 
 	if (IsTriggered(sprite) and delete_time > delete_delay) then
-		--Delete(sprite)
+		Delete(sprite)
 	end
+
+	if (GetY(sprite) < -1000) then Delete(sprite) end
 
 end

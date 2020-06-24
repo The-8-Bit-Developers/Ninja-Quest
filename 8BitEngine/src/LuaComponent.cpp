@@ -525,16 +525,17 @@ int LuaComponent::lua_Delete(lua_State* L)
 	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function Delete"); return 0; }
 
 	int spriteID = LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
-	
+
 	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end())
 	{
 		// Find sprite in lua sprites first, then delete in other areas
 		for (unsigned int i = 0; i < Engine::Get().m_luaSprites.size(); ++i)
 			if (Engine::Get().m_luaSprites[i]->m_ID == (unsigned int)spriteID)
 				Engine::Get().m_luaSprites.erase(Engine::Get().m_luaSprites.begin() + i);
-
-		delete Sprite::s_Sprites.at(spriteID);
-		Sprite::s_Sprites.erase(spriteID);
+		
+		Sprite::s_Sprites[spriteID]->bDelete = true;
+		//Sprite::s_Sprites.erase(spriteID);
+		//delete Sprite::s_Sprites.at(spriteID);
 	}
 
 	return 0;
@@ -604,6 +605,7 @@ int LuaComponent::lua_IsTriggered(lua_State* L)
 		b2ContactEdge* c = Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetContactList();
 		if (c != nullptr && c->contact->IsTouching())
 		{
+			c->contact->GetFixtureA()->GetUserData()->
 			bCollided = true;
 		}
 	}

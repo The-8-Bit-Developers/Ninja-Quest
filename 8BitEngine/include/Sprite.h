@@ -69,6 +69,8 @@ public:
 	void RemoveComponent(int component);
 	std::vector<Component*> m_Components;
 
+	bool bDelete = false;
+
 public:
 	static Logger* logger;
 	static unsigned int s_SpriteIDCount;

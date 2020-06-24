@@ -29,7 +29,7 @@ void TestGame::OnStart()
 				enemyCount++;
 				continue;
 			}
-			m_GroundSprites[y*width+x].SetTexture("ground.png");
+			m_GroundSprites[y*width+x].SetTexture(level[y*width + x] == '1' ? "ground.png" : "dirt.png");
 			m_GroundSprites[y*width+x].m_Position = { groundX + 32.0f * x, groundY - 32.0f * y};
 			m_GroundSprites[y*width+x].AddStaticPhysics();
 		}

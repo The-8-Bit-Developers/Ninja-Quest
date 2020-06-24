@@ -16,6 +16,7 @@ function OnCreate()
 
 	SetTexture(enemy, "playerLeft.png")
 	AddPhysics(enemy, true, 0.01, 32, 40)
+	SetTrigger(enemy)
 	SetLayer(enemy, 1)
 	SetFriction(enemy, 1000)
 
@@ -46,8 +47,7 @@ function OnUpdate(delta)
 
 	-- Update enemy offsets
 	enemy_offset_count = enemy_offset_count + enemy_offset_speed * delta
-	enemy_offset = math.sin(enemy_offset_count) * 2.0
-	enemy_offset = enemy_offset * 0.3
+	enemy_offset = math.sin(enemy_offset_count) * 0.00
 	SetX(enemy, GetX(enemy) + enemy_offset)
 
 	-- Update rope positions
@@ -69,5 +69,8 @@ function OnUpdate(delta)
 	end
 
 	AddY(enemy, -0.01 * delta)
+
+	-- Die if we've gotten hit and are above the ground
+	if ()
 
 end

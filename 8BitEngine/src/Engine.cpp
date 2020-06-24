@@ -89,7 +89,23 @@ void Engine::BeginFrame()
 	// Update components
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 		for (Component* c : sprite->m_Components)
-			c->OnUpdate();
+		{
+			if (sprite != nullptr && !sprite->bDelete) c->OnUpdate();
+		}
+
+	// Clean up from Lua
+	for (auto it = Sprite::s_Sprites.begin(); it != Sprite::s_Sprites.end();) 
+	{
+		if (it->second->bDelete)
+		{
+			Sprite* s = it->second;
+			//std::cout << std::to_string(s->m_Position.x) << std::endl;
+			it = Sprite::s_Sprites.erase(it);
+			delete s;
+		}
+		else it++;
+	}
+
 
 	// Render game
 	m_Window.Clear(sf::Color((uint8_t)m_BackgroundR, (uint8_t)m_BackgroundG, (uint8_t)m_BackgroundB));
@@ -107,6 +123,7 @@ void Engine::EndFrame()
 	constexpr float physicsSpeed = 1.0f / 60.0f;
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
+		if (sprite->bDelete) continue;
 		if (sprite->m_PhysicsBody != nullptr) sprite->m_PhysicsBody->SetAwake(true); // Set everything to awake to fix getting stuck!
 		if (sprite->m_PhysicsBody != nullptr && (sprite->lastPhysicsPosition.x != sprite->m_Position.x || sprite->lastPhysicsPosition.y != sprite->m_Position.y))
 		{
