@@ -5,10 +5,14 @@
 #include "LuaComponent.h"
 
 constexpr const char* level = // 0 - empty, 1 - ground, 2 - enemy
-"0000000000"
-"0000110000"
-"0221111220"
-"1111111111";
+"000000000000000000"
+"000000001100000000"
+"000002211112200000"
+"111111111111111111"
+"333333333333333333"
+"333333333333333333"
+"333333333333333333"
+"333333333333333333";
 
 void TestGame::OnStart()
 {
@@ -29,7 +33,7 @@ void TestGame::OnStart()
 				enemyCount++;
 				continue;
 			}
-			m_GroundSprites[y*width+x].SetTexture("ground.png");
+			m_GroundSprites[y*width+x].SetTexture(level[y*width + x] == '1' ? "ground.png" : "dirt.png");
 			m_GroundSprites[y*width+x].m_Position = { groundX + 32.0f * x, groundY - 32.0f * y};
 			m_GroundSprites[y*width+x].AddStaticPhysics();
 		}

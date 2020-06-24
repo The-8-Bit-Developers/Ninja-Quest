@@ -21,12 +21,12 @@ function OnCreate()
 	magnitude = math.sqrt(targetX*targetX + targetY*targetY)
 	SetVelocityX(sprite, targetX * magnitude)
 	SetVelocityY(sprite, targetY * magnitude)
-
+ 
 end
 
 -- Main game loop - move player
 function OnUpdate(delta)
-	
+	AddForce(sprite, 0, 750)
 	delete_time = delete_time + delta
 
 	if (IsTriggered(sprite) and delete_time > delete_delay) then

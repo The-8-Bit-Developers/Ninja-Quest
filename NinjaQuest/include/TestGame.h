@@ -7,8 +7,8 @@
 #include "Scene.h"
 #include "Lua.h"
 
-constexpr int width = 10;
-constexpr int height = 4;
+constexpr int width = 18;
+constexpr int height = 8;
 constexpr int enemies = 4;
 
 class TestGame : public Scene

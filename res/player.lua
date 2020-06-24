@@ -20,7 +20,7 @@ local jump_force = 2
 local camera_speed = 0.2
 
 local shuriken_time = 0
-local shuriken_delay = 250
+local shuriken_delay = 750
 
 -- Load sprites in OnCreate
 function OnCreate()
