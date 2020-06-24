@@ -14,6 +14,10 @@ key_right = 72
 
 key_space = 57
 
+key_one = 27
+key_two = 28
+key_three = 29
+
 local speed = 100.0
 local hack_speed = speed * 0.001
 local jump_force = 2
@@ -37,7 +41,12 @@ end
 -- Main game loop - move player
 function OnUpdate(delta)
 
+	--changes  the number press variable is 1 2 3 is pressed
+	if(GetKeyDown(key_one)) then number_press = 0 end --rock 
 	
+	if(GetKeyDown(key_two)) then number_press = 1 end --shuriken
+
+	if(GetKeyDown(key_three)) then number_press = 2 end --sword
 	-- Get if player is grounded by casting a ray from his position
 	-- 20.1 units down (don't ask me why, that number's magic!)
 	grounded = RayCast(GetX(player), GetY(player), 0, -20.1)
