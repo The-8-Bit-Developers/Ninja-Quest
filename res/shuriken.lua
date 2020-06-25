@@ -1,7 +1,4 @@
-local delete_delay = 1000
-local delete_time = 0
-
-local shuriken_gravity = 0.5
+local shuriken_gravity = 0.3
 
 function OnCreate()
 
@@ -13,6 +10,14 @@ function OnCreate()
 	AddSpherePhysics(sprite, true, 0.01)
 	SetTrigger(sprite)
 	--SetFriction(sprite, 1000)
+
+	-- Decide type
+	type = GetType()
+	if (type == 0) then SetTexture(sprite, "shuriken.png") end
+	if (type == 1) then SetTexture(sprite, "Rock.png") end
+	if (type == 2) then SetTexture(sprite, "Paper_Sword.png") end
+	SetBodyData(sprite, 2 + type)
+
 
 	SetGravity(sprite, shuriken_gravity)
 
@@ -31,10 +36,10 @@ end
 -- Main game loop - move player
 function OnUpdate(delta)
 
-	delete_time = delete_time + delta
-
-	if (IsTriggered(sprite) and delete_time > delete_delay) then
-		Delete(sprite)
+	if (IsTriggered(sprite)) then
+		id1, id2, data1, data2 = GetTriggeredData(sprite)
+		-- If not player
+		if (data1 ~= 1 and data2 ~= 1) then Delete(sprite) end
 	end
 
 	if (GetY(sprite) < -1000) then Delete(sprite) end

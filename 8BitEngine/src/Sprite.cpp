@@ -63,6 +63,7 @@ void Sprite::AddStaticPhysics(float width, float height)
 	shape.SetAsBox(width * 0.5f * PHYSICS_SCALE, height * 0.5f * PHYSICS_SCALE);
 	m_PhysicsBody->CreateFixture(&shape, 0.0f);
 
+	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::AddStaticPhysicsSphere(float radius)
@@ -83,6 +84,8 @@ void Sprite::AddStaticPhysicsSphere(float radius)
 	body.m_radius = radius * PHYSICS_SCALE;
 
 	m_PhysicsBody->CreateFixture(&body, 0.0f);
+
+	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::SetTexture(sf::Texture* texture)
@@ -123,6 +126,8 @@ void Sprite::AddDynamicPhysics(float density, float width, float height)
 	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);
 
+	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
+
 }
 
 void Sprite::AddDynamicPhysicsSphere(float density, float radius)
@@ -150,6 +155,7 @@ void Sprite::AddDynamicPhysicsSphere(float density, float radius)
 	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);
 
+	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::RemovePhysics()
@@ -175,10 +181,21 @@ void Sprite::RemoveComponent(int component)
 	m_Components.erase(m_Components.begin() + component);
 }
 
-Sprite::~Sprite() 
-{ 
-	s_Sprites.erase(m_ID); 
+void Sprite::Disable()
+{
+	if (m_bDisabled) return;
+	s_Sprites.erase(m_ID);
 	s_SpriteIDCount--;
 	if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody);
 	for (Component* c : m_Components) delete c;
+	m_bDisabled = true;
+}
+
+Sprite::~Sprite() 
+{ 
+	if (m_bDisabled) return;
+	s_Sprites.erase(m_ID); 
+	s_SpriteIDCount--;
+	if (m_PhysicsBody != nullptr) s_PhysicsWorld.DestroyBody(m_PhysicsBody);
+	for (Component* c : m_Components) if (c != nullptr) delete c;
 }

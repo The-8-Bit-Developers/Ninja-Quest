@@ -38,6 +38,16 @@ public:
 
 	void Create(const std::string& windowName, const int windowWidth, const int windowHeight);
 
+	inline void Reset()
+	{
+		for (unsigned int i = 0; i < m_luaSprites.size(); ++i)
+		{
+			if (m_luaSprites[i] != nullptr)
+			delete m_luaSprites[i];
+		}
+		m_luaSprites.clear();
+	}
+
 	Sprite* GetSprite(unsigned int ID);
 
 	bool Update();

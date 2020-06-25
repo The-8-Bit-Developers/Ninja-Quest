@@ -22,6 +22,25 @@ public:
 
 	static LuaComponent* s_CurrentInstance;
 
+	struct CustomFunction
+	{
+		CustomFunction()
+		{
+			name = "null";
+			function = 0;
+		}
+
+		CustomFunction(const std::string _name, int* _function)
+		{
+			name = _name;
+			function = _function;
+		}
+
+		std::string name;
+		int* function;
+	};
+	static CustomFunction s_CustomFunction;
+
 	// Lua functions
 	static int lua_CreateSprite(lua_State* L);
 	static int lua_GetKeyDown(lua_State* L);
@@ -59,6 +78,8 @@ public:
 	static int lua_GetMouseY(lua_State* L);
 	static int lua_SetTrigger(lua_State* L);
 	static int lua_IsTriggered(lua_State* L);
+	static int lua_SetBodyData(lua_State* L);
+	static int lua_GetTriggeredData(lua_State* L);
 
 	Lua m_Lua;
 	

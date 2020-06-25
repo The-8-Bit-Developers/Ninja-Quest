@@ -3,6 +3,7 @@
 #include "Engine.h"
 
 LuaComponent* LuaComponent::s_CurrentInstance;
+LuaComponent::CustomFunction LuaComponent::s_CustomFunction;
 
 LuaComponent::LuaComponent(const std::string& fileName) : m_Lua(Engine::Get().m_Logger, Engine::OnLuaPrint, Engine::OnLuaError)
 {
@@ -66,6 +67,10 @@ void LuaComponent::RegisterFunctions()
 	m_Lua.SetGlobalFunction("GetMouseY",	lua_GetMouseY);
 	m_Lua.SetGlobalFunction("SetTrigger",	lua_SetTrigger);
 	m_Lua.SetGlobalFunction("IsTriggered",	lua_IsTriggered);
+	m_Lua.SetGlobalFunction("SetBodyData",	lua_SetBodyData);
+	m_Lua.SetGlobalFunction("GetTriggeredData", lua_GetTriggeredData);
+
+	if (s_CustomFunction.name != "null") m_Lua.SetGlobalFunction(s_CustomFunction.name.c_str(), (int(*)(lua_State*)) s_CustomFunction.function);
 }
 
 void LuaComponent::OnUpdate()
@@ -608,7 +613,50 @@ int LuaComponent::lua_IsTriggered(lua_State* L)
 			bCollided = true;
 		}
 	}
+
 	LuaComponent::s_CurrentInstance->m_Lua.PushBool(bCollided);
 
 	return 1;
+}
+
+int LuaComponent::lua_GetTriggeredData(lua_State* L)
+{
+	if (lua_gettop(L) != 1) { Log("Invalid number of arguments in function GetTriggeredData"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	bool bCollided = false;
+	int spriteIDA = 0;
+	int spriteIDB = 0;
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		b2ContactEdge* c = Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetContactList();
+		if (c != nullptr && c->contact->IsTouching())
+		{
+			spriteIDA = (int)(unsigned int)c->contact->GetFixtureA()->GetBody()->GetUserData();
+			spriteIDB = (int)(unsigned int)c->contact->GetFixtureB()->GetBody()->GetUserData();
+			bCollided = true;
+		}
+	}
+
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(spriteIDA >> 16);
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(spriteIDB >> 16);
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(spriteIDA & 0xFFFF);
+	LuaComponent::s_CurrentInstance->m_Lua.PushNumber(spriteIDB & 0xFFFF);
+
+	return 4;
+}
+
+int LuaComponent::lua_SetBodyData(lua_State* L)
+{
+	if (lua_gettop(L) != 2) { Log("Invalid number of arguments in function SetBodyData"); return 0; }
+
+	unsigned int spriteID = (unsigned int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(1);
+	int number = (int)LuaComponent::s_CurrentInstance->m_Lua.GetInt(2);
+
+	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
+	{
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)spriteID << 16 | (uint32_t)number));
+	}
+
+	return 0;
 }

@@ -25,6 +25,9 @@ public:
 	Sprite();
 	~Sprite();
 
+	void Disable();
+	bool m_bDisabled = false;
+
 	Vec2 m_Position;
 	Vec2 m_Scale;
 

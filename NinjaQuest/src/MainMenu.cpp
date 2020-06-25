@@ -3,12 +3,11 @@
 
 #include "LuaComponent.h"
 
-constexpr int groundWidth = 50;
-constexpr int groundHeight = 10;
+constexpr int groundWidth = 0;//50;
+constexpr int groundHeight = 0;//10;
 
 MainMenu::MainMenu() : m_Music("disco.wav")
 {
-	m_Music.SetVolume(0.5f);
 	m_Music.SetLoop(true);
 }
 
@@ -85,7 +84,7 @@ int MainMenu::OnUpdate()
 		}
 	}
 
-	m_Player.m_Position = { -170.0f, groundY + 36.0f };
+	m_Player.m_Position = { -100000, 0 };//{ -170.0f, groundY + 36.0f };
 
 	// Draw text and UI
 	m_Title.setPosition(sf::Vector2f(Engine::Get().GetTextCentreX(m_Title), 100));
@@ -112,7 +111,7 @@ int MainMenu::OnUpdate()
 		m_KeysPressed[0] = Engine::Get().GetKeyDown(sf::Keyboard::Up);
 		m_KeysPressed[1] = Engine::Get().GetKeyDown(sf::Keyboard::Down);
 
-		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 0) return GAME_TEST;
+		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 0) return INTRO;
 		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 1) m_Screen = ABOUT;
 		if (Engine::Get().GetKeyDown(sf::Keyboard::Enter) && m_nMenuItem == 2) Engine::Get().m_Window.Close();
 	}

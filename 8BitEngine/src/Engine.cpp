@@ -83,6 +83,7 @@ int Engine::OnLuaError(lua_State* L)
 
 void Engine::BeginFrame()
 {
+
 	// Begin dela-time calclation
 	m_Timer.BeginFrame();
 
@@ -90,12 +91,13 @@ void Engine::BeginFrame()
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 		for (Component* c : sprite->m_Components)
 		{
-			if (sprite != nullptr && !sprite->bDelete) c->OnUpdate();
+			if (sprite != nullptr && !sprite->bDelete && !sprite->m_bDisabled) c->OnUpdate();
 		}
 
 	// Clean up from Lua
 	for (auto it = Sprite::s_Sprites.begin(); it != Sprite::s_Sprites.end();) 
 	{
+		if (it->second == nullptr) continue;
 		if (it->second->bDelete)
 		{
 			Sprite* s = it->second;
@@ -123,7 +125,7 @@ void Engine::EndFrame()
 	constexpr float physicsSpeed = 1.0f / 60.0f;
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
-		if (sprite->bDelete) continue;
+		if (sprite->bDelete || sprite->m_bDisabled) continue;
 		if (sprite->m_PhysicsBody != nullptr) sprite->m_PhysicsBody->SetAwake(true); // Set everything to awake to fix getting stuck!
 		if (sprite->m_PhysicsBody != nullptr && (sprite->lastPhysicsPosition.x != sprite->m_Position.x || sprite->lastPhysicsPosition.y != sprite->m_Position.y))
 		{
@@ -134,7 +136,7 @@ void Engine::EndFrame()
 	Sprite::s_PhysicsWorld.Step(physicsSpeed, 6, 2);
 	for (auto&[id, sprite] : Sprite::s_Sprites)
 	{
-		if (sprite->m_PhysicsBody != nullptr) sprite->m_Position = { sprite->m_PhysicsBody->GetPosition().x * PHYSICS_SCALE_INV, sprite->m_PhysicsBody->GetPosition().y * PHYSICS_SCALE_INV };
+		if (sprite->m_PhysicsBody != nullptr && !sprite->m_bDisabled) sprite->m_Position = { sprite->m_PhysicsBody->GetPosition().x * PHYSICS_SCALE_INV, sprite->m_PhysicsBody->GetPosition().y * PHYSICS_SCALE_INV };
 	}
 
 #ifdef DEBUG
@@ -143,7 +145,7 @@ void Engine::EndFrame()
 
 	auto RenderSprite = [&](Sprite* sprite)
 	{
-		if (sprite->m_Layer < 0) return;
+		if (sprite->m_Layer < 0 || sprite->m_bDisabled) return;
 		sprite->m_Sprite.setPosition(sprite->m_Position.x, -sprite->m_Position.y);
 		sprite->m_Sprite.setScale(sprite->m_Scale.x, sprite->m_Scale.y);
 		m_Window.Draw(sprite->m_Sprite);

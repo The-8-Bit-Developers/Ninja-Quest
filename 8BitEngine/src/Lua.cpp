@@ -37,6 +37,13 @@ int Lua::GetGlobalNumber(const std::string& variable)
 	return (int) lua_tonumber(L, -1);
 }
 
+bool Lua::GetGlobalBool(const std::string& variable)
+{
+	if (variable != "-1") lua_getglobal(L, variable.c_str());
+	if (lua_isnoneornil(L, 1)) return false;
+	return lua_toboolean(L, -1);
+}
+
 void Lua::SetGlobalNumber(const std::string& variable, float number)
 {
 	lua_pushnumber(L, number);

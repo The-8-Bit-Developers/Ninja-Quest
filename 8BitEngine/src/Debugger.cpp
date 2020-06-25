@@ -41,7 +41,7 @@ void Debugger::Draw(Window& window, float fElapsedTime, float physicsTime, bool 
 	window.Draw(text);
 
 	text.setCharacterSize(20);
-	y += 70;
+	y += 90;
 
 	// Draw log messages
 	for (const std::string& message : logger->m_Messages)

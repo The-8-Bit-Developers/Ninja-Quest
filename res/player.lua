@@ -31,6 +31,7 @@ function OnCreate()
 	AddPhysics(player, true, 0.01, 32, 40)
 	SetFriction(player, 1000) -- Set friction to a high amount to stop the player moving pretty much insantly
 
+	SetBodyData(player, 1)
 end
 
 -- Main game loop - move player

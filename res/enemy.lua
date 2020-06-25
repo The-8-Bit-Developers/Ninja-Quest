@@ -11,6 +11,9 @@ local rope_offset_speed = 0.01
 local enemy_offset_count = math.random(0, 10000)
 local enemy_offset_speed = 0.01
 
+game_over = false
+shuriken = 0
+
 -- Load sprites in OnCreate
 function OnCreate()
 
@@ -33,6 +36,10 @@ function OnCreate()
 	global_rope_offset_y = math.random() * -50
 
 	SetY(enemy, 150)
+
+	SetBodyData(enemy, 100)
+
+	print("making", enemy)
 
 end
 
@@ -73,7 +80,15 @@ function OnUpdate(delta)
 	-- Stop the player moving an enemy
 	SetVelocityY(enemy, 0)
 
-	-- Die if we've gotten hit and are above the ground
-	-- do stuff and cause game over
+	-- Check for collisions
+	if (IsTriggered(enemy)) then
+		id1, id2, data1, data2 = GetTriggeredData(enemy)
+		-- If player or ground
+		if (data1 <= 1 or data2 <= 1) then game_over = true end
+		if (data1 > 1 and data1 < 100 or data2 > 1 and data2 < 100) then
+			if (data1 > 1 and data1 < 100) then shuriken = data1
+			else shuriken = data2 end
+		end
+	end
 
 end
