@@ -63,7 +63,7 @@ void Sprite::AddStaticPhysics(float width, float height)
 	shape.SetAsBox(width * 0.5f * PHYSICS_SCALE, height * 0.5f * PHYSICS_SCALE);
 	m_PhysicsBody->CreateFixture(&shape, 0.0f);
 
-	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
+	m_PhysicsBody->SetUserData((void*)(size_t)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::AddStaticPhysicsSphere(float radius)
@@ -85,7 +85,7 @@ void Sprite::AddStaticPhysicsSphere(float radius)
 
 	m_PhysicsBody->CreateFixture(&body, 0.0f);
 
-	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
+	m_PhysicsBody->SetUserData((void*)(size_t)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::SetTexture(sf::Texture* texture)
@@ -126,7 +126,7 @@ void Sprite::AddDynamicPhysics(float density, float width, float height)
 	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);
 
-	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
+	m_PhysicsBody->SetUserData((void*)(size_t)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 
 }
 
@@ -155,7 +155,7 @@ void Sprite::AddDynamicPhysicsSphere(float density, float radius)
 	fixtureDef.friction = 100.0f;
 	m_PhysicsBody->CreateFixture(&fixtureDef);
 
-	m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
+	m_PhysicsBody->SetUserData((void*)(size_t)(int32_t)((uint32_t)m_ID << 16 | (uint32_t)0));
 }
 
 void Sprite::RemovePhysics()

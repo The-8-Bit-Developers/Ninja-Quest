@@ -632,8 +632,8 @@ int LuaComponent::lua_GetTriggeredData(lua_State* L)
 		b2ContactEdge* c = Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->GetContactList();
 		if (c != nullptr && c->contact->IsTouching())
 		{
-			spriteIDA = (int)(unsigned int)c->contact->GetFixtureA()->GetBody()->GetUserData();
-			spriteIDB = (int)(unsigned int)c->contact->GetFixtureB()->GetBody()->GetUserData();
+			spriteIDA = (int)(unsigned int)(size_t)c->contact->GetFixtureA()->GetBody()->GetUserData();
+			spriteIDB = (int)(unsigned int)(size_t)c->contact->GetFixtureB()->GetBody()->GetUserData();
 			bCollided = true;
 		}
 	}
@@ -655,7 +655,7 @@ int LuaComponent::lua_SetBodyData(lua_State* L)
 
 	if (Sprite::s_Sprites.find(spriteID) != Sprite::s_Sprites.end() && Sprite::s_Sprites.at(spriteID)->m_PhysicsBody != nullptr)
 	{
-		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetUserData((void*)(int32_t)((uint32_t)spriteID << 16 | (uint32_t)number));
+		Sprite::s_Sprites.at(spriteID)->m_PhysicsBody->SetUserData((void*)(size_t)(int32_t)((uint32_t)spriteID << 16 | (uint32_t)number));
 	}
 
 	return 0;
