@@ -1,6 +1,8 @@
 # Ninja Quest
 Ninja Quest is a fun 2D 8-Bit game written for the 154th week of [weeklygamejam.com](http://www.weeklygamejam.com/)
 
+## Attention: The game is done, yet due to time constraints still has a fatal crash upon changing levels (sometimes). The game code (not the engine code) is also incredibly messy as a result of this lack of time. 
+
 ## Supported platforms
 * Windows
 * MacOS
